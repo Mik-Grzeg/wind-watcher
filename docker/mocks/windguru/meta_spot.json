@@ -1,0 +1,911 @@
+{
+  "tabs": [
+    {
+      "header": "<span class=\"poscheck\"></span><div class=\"spot-header\"><div class=\"spot wg  \"><a href='javascript:WG.showForecastSpot(36048);'><div class=\"spot-name wg-guide  \" data-guide-priority=\"9\" data-guide-src=\"spotname.php\">Spain - Canary Islands - Gran Canaria - Pozo / Vargas  </div></a><div class=\"spotname-icons\"><a class=\"spot-icon-link tooltip favourite-add \" data-id_spot=\"36048\" data-favourite=\"0\" title=\"Add or remove favourite\"><svg class=\"icon\"><use xlink:href=\"#ico_favourite\"></use></svg></a></div><a class=\"spot-info-link min-medium-screen-hide toggle-details tooltip\" title=\"Show additional info\"><svg class=\"icon\"><use xlink:href=\"#ico_info\"></use></svg><span class=\"w480-hide\"> Spot info</span></a><div class=\"spot-details spot-details-parts on small-tablet-hide\"><ul class=\"sm sm-simple\"><li class=\"nolink tablet-hide\"><svg class=\"icon\"><use xlink:href=\"#ico_sunrise_sunset\"></use></svg> 07:46 - 20:19</li><li class=\"nolink big-tablet-hide\"><svg class=\"icon\"><use xlink:href=\"#ico_moonrise_moonset\"></use></svg> 22:53 - 09:03</li><li class=\"nolink\"><svg class=\"icon\"><use xlink:href=\"#ico_water_temperature\"></use></svg> 19 &deg;C</li><li class=\"small-screen-hide\"><a onclick=\"WG.openMiniSpotMap(this);\" data-args=\"{&quot;lat&quot;:&quot;27.85&quot;,&quot;lon&quot;:&quot;-15.35&quot;,&quot;id_spot&quot;:&quot;36048&quot;,&quot;spotname&quot;:&quot;Canary Islands - Gran Canaria - Pozo \\/ Vargas&quot;,&quot;zoom&quot;:12}\"><svg class=\"icon\"><use xlink:href=\"#ico_spot_map\"></use></svg> lat: 27.85, lon: -15.35, alt: 0 m</a></li><li class=\"nolink medium-screen-hide\"><svg class=\"icon\"><use xlink:href=\"#ico_timezone\"></use></svg> WEST (UTC +01:00)</li><li class=\"medium-screen-hide\"><a onclick=\"WG.showTideExplorer(this);\" data-args=\"{&quot;lat&quot;:&quot;27.85&quot;,&quot;lon&quot;:&quot;-15.35&quot;,&quot;id_spot&quot;:&quot;36048&quot;,&quot;spotname&quot;:&quot;Canary Islands - Gran Canaria - Pozo \\/ Vargas&quot;}\"><svg class=\"icon\"><use xlink:href=\"#ico_tide\"></use></svg> Tides </a></li> </ul></div></div><div class=\"spot-details spot-details-full separate\"><ul class=\"sm sm-simple\"><li class=\"nolink\"><svg class=\"icon\"><use xlink:href=\"#ico_sunrise_sunset\"></use></svg> 07:46 - 20:19</li><li class=\"nolink\"><svg class=\"icon\"><use xlink:href=\"#ico_moonrise_moonset\"></use></svg> 22:53 - 09:03</li><li class=\"nolink\">&nbsp;<svg class=\"icon\"><use xlink:href=\"#ico_water_temperature\"></use></svg> 19 &deg;C</li><li><a onclick=\"WG.openMiniSpotMap(this);\" data-args=\"{&quot;lat&quot;:&quot;27.85&quot;,&quot;lon&quot;:&quot;-15.35&quot;,&quot;id_spot&quot;:&quot;36048&quot;,&quot;spotname&quot;:&quot;Canary Islands - Gran Canaria - Pozo \\/ Vargas&quot;,&quot;zoom&quot;:12}\"><svg class=\"icon\"><use xlink:href=\"#ico_spot_map\"></use></svg> lat: 27.85, lon: -15.35, alt: 0 m</a></li><li class=\"nolink\"><svg class=\"icon\"><use xlink:href=\"#ico_timezone\"></use></svg> WEST (UTC +01:00)</li><li><a onclick=\"WG.showTideExplorer(this);\" data-args=\"{&quot;lat&quot;:&quot;27.85&quot;,&quot;lon&quot;:&quot;-15.35&quot;,&quot;id_spot&quot;:&quot;36048&quot;,&quot;spotname&quot;:&quot;Canary Islands - Gran Canaria - Pozo \\/ Vargas&quot;}\"><svg class=\"icon\"><use xlink:href=\"#ico_tide\"></use></svg> Tides </a></li> </ul></div></div>\n<div class=\"spot-live-div dragscroll spot-live-div-run no-user-select hidden\" data-lat=\"27.85\"  data-lon=\"-15.35\"></div>",
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 100,
+      "id_model_arr": [
+        {
+          "id_model": 3,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x240x0x240-2023040800x243x384x255x384",
+          "period": 6,
+          "cachefix": "27.85x-15.35x0"
+        },
+        {
+          "id_model": 42,
+          "initstr": "2023040806",
+          "rundef": "2023040806x0x48x0x48",
+          "period": 6,
+          "cachefix": "27.85x-15.35x0"
+        },
+        {
+          "id_model": 22,
+          "initstr": "2023040806",
+          "rundef": "2023040806x0x78x0x78",
+          "period": 6,
+          "cachefix": "27.85x-15.35x0"
+        },
+        {
+          "id_model": 45,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x180x0x180",
+          "period": 6,
+          "cachefix": "27.85x-15.35x0"
+        },
+        {
+          "id_model": 59,
+          "initstr": "2023040800",
+          "rundef": "2023040800x0x240x0x240",
+          "period": 12,
+          "cachefix": "27.85x-15.35x0"
+        },
+        {
+          "id_model": 84,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x240x0x240-2023040800x243x384x255x384",
+          "period": 6,
+          "cachefix": "27.834x-15.333x0"
+        }
+      ],
+      "model_period": 0,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "WINDSPD",
+          "GUST",
+          "SMER",
+          "HTSGW",
+          "PERPW",
+          "DIRPW",
+          "TMPE",
+          "FLHGT",
+          "CDC",
+          "APCP1s",
+          "RATING"
+        ],
+        "var_map": [],
+        "tide": {
+          "style": "separate",
+          "min": 50
+        }
+      },
+      "blend": {
+        "id_blend_settings": 1,
+        "id_user": 169,
+        "name": "WINDGURU DEFAULT",
+        "lat": null,
+        "lon": null,
+        "range": null,
+        "res_sensitivity": 0.5,
+        "init_sensitivity": 0.5,
+        "model_koef": {
+          "3": 1,
+          "4": 1,
+          "14": 1,
+          "21": 1,
+          "22": 1,
+          "23": 1,
+          "24": 1,
+          "29": 1,
+          "32": 1,
+          "33": 1,
+          "34": 1,
+          "36": 1,
+          "37": 1,
+          "38": 1,
+          "39": 1,
+          "40": 1,
+          "42": 1,
+          "43": 0.7,
+          "44": 1,
+          "45": 0.7,
+          "48": 1,
+          "49": 1,
+          "50": 1,
+          "51": 1,
+          "52": 1,
+          "53": 0,
+          "54": 1,
+          "55": 1,
+          "56": 1,
+          "57": 1,
+          "59": 0.7,
+          "90": 1,
+          "98": 1,
+          "91": 1,
+          "92": 1,
+          "95": 1,
+          "93": 1,
+          "94": 1,
+          "96": 1,
+          "99": 1,
+          "63": 1,
+          "70": 1,
+          "64": 1,
+          "74": 1,
+          "75": 1,
+          "71": 1,
+          "69": 1,
+          "62": 1,
+          "72": 1,
+          "68": 1,
+          "87": 1,
+          "89": 1
+        },
+        "mix_range": {
+          "WINDSPD": 22.2,
+          "TMPE": 28.8,
+          "TMP": 28.8,
+          "TCDC": 100,
+          "CDC": 100,
+          "APCP1": 1.4,
+          "GUST": 34.6,
+          "FLHGT": 4709,
+          "SLP": 43.5,
+          "HCDC": 100,
+          "MCDC": 100,
+          "LCDC": 100,
+          "RH": 57.2
+        },
+        "mix_skip": [
+          "APCP1",
+          "WINDDIR"
+        ],
+        "var_map": {
+          "3": {
+            "WINDSPD": "m_windspd,particles",
+            "GUST": "m_gust,particles",
+            "TMPE": "m_t2m",
+            "CDC": "m_tcdca,isobars",
+            "APCP1s": "m_tcdca,isobars"
+          },
+          "42": {
+            "WINDSPD": "m_windspd,particles",
+            "GUST": "m_gust,particles",
+            "TMPE": "m_t2m",
+            "CDC": "m_tcdca,isobars",
+            "APCP1s": "m_tcdca,isobars"
+          },
+          "22": {
+            "WINDSPD": "m_windspd,particles",
+            "GUST": "m_gust,particles",
+            "TMPE": "m_t2m",
+            "CDC": "m_tcdca,isobars",
+            "APCP1s": "m_tcdca,isobars"
+          },
+          "45": {
+            "WINDSPD": "m_windspd,particles",
+            "GUST": "m_gust,particles",
+            "TMPE": "m_t2m",
+            "CDC": "m_tcdca,isobars",
+            "APCP1s": "m_tcdca,isobars"
+          },
+          "59": {
+            "WINDSPD": "m_windspd,particles",
+            "GUST": "m_gust,particles",
+            "TMPE": "m_t2m",
+            "CDC": "m_tcdca,isobars",
+            "APCP1s": "m_tcdca,isobars"
+          }
+        }
+      },
+      "id_model_wave": 84
+    },
+    {
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 3,
+      "id_model_arr": [
+        {
+          "id_model": 3,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x240x0x240-2023040800x243x384x255x384",
+          "period": 6,
+          "cachefix": "27.85x-15.35x0"
+        },
+        {
+          "id_model": 84,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x240x0x240-2023040800x243x384x255x384",
+          "period": 6,
+          "cachefix": "27.834x-15.333x0"
+        }
+      ],
+      "model_period": 6,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "WINDSPD",
+          "GUST",
+          "MWINDSPD",
+          "SMER",
+          "HTSGW",
+          "PERPW",
+          "DIRPW",
+          "TMPE",
+          "FLHGT",
+          "CDC",
+          "APCP1s",
+          "RATING"
+        ],
+        "var_map": {
+          "WINDSPD": "m_windspd,particles",
+          "GUST": "m_gust,particles",
+          "MWINDSPD": "m_windspd,particles",
+          "TMPE": "m_t2m",
+          "CDC": "m_tcdca,isobars",
+          "APCP1s": "m_tcdca,isobars"
+        },
+        "tide": {
+          "style": "none",
+          "min": 50
+        }
+      },
+      "id_model_wave": 84
+    },
+    {
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 84,
+      "id_model_arr": [
+        {
+          "id_model": 84,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x240x0x240-2023040800x243x384x255x384",
+          "period": 6,
+          "cachefix": "27.834x-15.333x0"
+        }
+      ],
+      "model_period": 6,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "HTSGW",
+          "PERPW",
+          "DIRPW",
+          "SWELL1",
+          "SWPER1",
+          "SWDIR1",
+          "SWELL2",
+          "SWPER2",
+          "SWDIR2",
+          "WVHGT",
+          "WVPER",
+          "WVDIR"
+        ],
+        "var_map": {
+          "HTSGW": "m_wave,particles",
+          "PERPW": "m_waveen,particles",
+          "SWELL1": "m_swell1,particles",
+          "SWPER1": "m_swell1en,particles",
+          "SWELL2": "m_swell2,particles",
+          "SWPER2": "m_swell2en,particles",
+          "WVHGT": "m_wvhgt,particles",
+          "WVPER": "m_wven,particles"
+        },
+        "tide": {
+          "style": "separate",
+          "min": 50
+        }
+      }
+    },
+    {
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 42,
+      "id_model_arr": [
+        {
+          "id_model": 42,
+          "initstr": "2023040806",
+          "rundef": "2023040806x0x48x0x48",
+          "period": 6,
+          "cachefix": "27.85x-15.35x0"
+        }
+      ],
+      "model_period": 6,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "WINDSPD",
+          "GUST",
+          "MWINDSPD",
+          "SMER",
+          "TMPE",
+          "FLHGT",
+          "CDC",
+          "APCP1s",
+          "RATING"
+        ],
+        "var_map": {
+          "WINDSPD": "m_windspd,particles",
+          "GUST": "m_gust,particles",
+          "MWINDSPD": "m_windspd,particles",
+          "TMPE": "m_t2m",
+          "CDC": "m_tcdca,isobars",
+          "APCP1s": "m_tcdca,isobars"
+        },
+        "tide": {
+          "style": "none",
+          "min": 50
+        }
+      }
+    },
+    {
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 22,
+      "id_model_arr": [
+        {
+          "id_model": 22,
+          "initstr": "2023040806",
+          "rundef": "2023040806x0x78x0x78",
+          "period": 6,
+          "cachefix": "27.85x-15.35x0"
+        }
+      ],
+      "model_period": 6,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "WINDSPD",
+          "GUST",
+          "MWINDSPD",
+          "SMER",
+          "TMPE",
+          "FLHGT",
+          "CDC",
+          "APCP1s",
+          "RATING"
+        ],
+        "var_map": {
+          "WINDSPD": "m_windspd,particles",
+          "GUST": "m_gust,particles",
+          "MWINDSPD": "m_windspd,particles",
+          "TMPE": "m_t2m",
+          "CDC": "m_tcdca,isobars",
+          "APCP1s": "m_tcdca,isobars"
+        },
+        "tide": {
+          "style": "none",
+          "min": 50
+        }
+      }
+    },
+    {
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 45,
+      "id_model_arr": [
+        {
+          "id_model": 45,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x180x0x180",
+          "period": 6,
+          "cachefix": "27.85x-15.35x0"
+        },
+        {
+          "id_model": 47,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x174x0x174",
+          "period": 12,
+          "cachefix": "27.85x-15.35x0"
+        }
+      ],
+      "model_period": 6,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "WINDSPD",
+          "GUST",
+          "MWINDSPD",
+          "SMER",
+          "HTSGW",
+          "PERPW",
+          "DIRPW",
+          "TMPE",
+          "FLHGT",
+          "CDC",
+          "APCPs",
+          "RATING"
+        ],
+        "var_map": {
+          "WINDSPD": "m_windspd,particles",
+          "GUST": "m_gust,particles",
+          "MWINDSPD": "m_windspd,particles",
+          "TMPE": "m_t2m",
+          "CDC": "m_tcdca,isobars",
+          "APCPs": "m_tcdca,isobars"
+        },
+        "tide": {
+          "style": "none",
+          "min": 50
+        }
+      },
+      "id_model_wave": 47
+    },
+    {
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 59,
+      "id_model_arr": [
+        {
+          "id_model": 59,
+          "initstr": "2023040800",
+          "rundef": "2023040800x0x240x0x240",
+          "period": 12,
+          "cachefix": "27.85x-15.35x0"
+        },
+        {
+          "id_model": 60,
+          "initstr": "2023040800",
+          "rundef": "2023040800x0x120x0x120",
+          "period": 12,
+          "cachefix": "27.85x-15.35x0"
+        }
+      ],
+      "model_period": 12,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "WINDSPD",
+          "GUST",
+          "MWINDSPD",
+          "SMER",
+          "HTSGW",
+          "PERPW",
+          "DIRPW",
+          "TMPE",
+          "FLHGT",
+          "TCDC",
+          "APCPs",
+          "RATING"
+        ],
+        "var_map": {
+          "WINDSPD": "m_windspd,particles",
+          "GUST": "m_gust,particles",
+          "MWINDSPD": "m_windspd,particles",
+          "TMPE": "m_t2m",
+          "TCDC": "m_tcdca,isobars",
+          "APCPs": "m_tcdca,isobars"
+        },
+        "tide": {
+          "style": "none",
+          "min": 50
+        }
+      },
+      "id_model_wave": 60
+    },
+    {
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 47,
+      "id_model_arr": [
+        {
+          "id_model": 47,
+          "initstr": "2023040812",
+          "rundef": "2023040812x0x174x0x174",
+          "period": 12,
+          "cachefix": "27.85x-15.35x0"
+        }
+      ],
+      "model_period": 12,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "HTSGW",
+          "PERPW",
+          "DIRPW",
+          "SWELL1",
+          "SWPER1",
+          "SWDIR1",
+          "WVHGT",
+          "WVPER",
+          "WVDIR"
+        ],
+        "var_map": {
+          "HTSGW": "m_wave,particles",
+          "PERPW": "m_waveen,particles",
+          "SWELL1": "m_swell1,particles",
+          "SWPER1": "m_swell1en,particles",
+          "WVHGT": "m_wvhgt,particles",
+          "WVPER": "m_wven,particles"
+        },
+        "tide": {
+          "style": "separate",
+          "min": 50
+        }
+      }
+    },
+    {
+      "share": true,
+      "id_spot": 36048,
+      "id_model": 60,
+      "id_model_arr": [
+        {
+          "id_model": 60,
+          "initstr": "2023040800",
+          "rundef": "2023040800x0x120x0x120",
+          "period": 12,
+          "cachefix": "27.85x-15.35x0"
+        }
+      ],
+      "model_period": 12,
+      "options": {
+        "wj": "knots",
+        "tj": "c",
+        "waj": "m",
+        "tij": "cm",
+        "odh": 3,
+        "doh": 22,
+        "fhours": 384,
+        "limit1": 10.63,
+        "limit2": 15.57,
+        "limit3": 19.41,
+        "tlimit": 10,
+        "vt": "forecast",
+        "wrapnew": null,
+        "show_flhgt_opt": 1,
+        "map_open_fn": "WG.openFcstMap",
+        "params": [
+          "HTSGW",
+          "DIRPW",
+          "PERPW",
+          "SWELL1",
+          "SWPER1",
+          "SWDIR1",
+          "SWELL2",
+          "SWPER2",
+          "SWDIR2",
+          "WVHGT",
+          "WVPER",
+          "WVDIR"
+        ],
+        "var_map": {
+          "HTSGW": "m_wave,particles",
+          "PERPW": "m_waveen,particles",
+          "SWELL1": "m_swell1,particles",
+          "SWPER1": "m_swell1en,particles",
+          "SWELL2": "m_swell2,particles",
+          "SWPER2": "m_swell2en,particles",
+          "WVHGT": "m_wvhgt,particles",
+          "WVPER": "m_wven,particles"
+        },
+        "tide": {
+          "style": "separate",
+          "min": 50
+        }
+      }
+    }
+  ],
+  "tabs_hidden": [],
+  "spots": {
+    "36048": {
+      "id_spot": "36048",
+      "id_user": "169",
+      "spotname": "Canary Islands - Gran Canaria - Pozo / Vargas",
+      "country": "Spain",
+      "id_country": 724,
+      "lat": 27.85,
+      "lon": -15.35,
+      "alt": 0,
+      "tz": "Atlantic/Canary",
+      "tzid": "Atlantic/Canary",
+      "gmt_hour_offset": 1,
+      "sunrise": "07:46",
+      "sunset": "20:19",
+      "sst": 19,
+      "models": [
+        100,
+        3,
+        84,
+        42,
+        22,
+        45,
+        59,
+        47,
+        60
+      ],
+      "tide": {
+        "2N2": [
+          2.12,
+          -0.58
+        ],
+        "EPS2": [
+          0.67,
+          -35.78
+        ],
+        "J1": [
+          0.68,
+          30.02
+        ],
+        "K1": [
+          6.11,
+          36.97
+        ],
+        "K2": [
+          7.6,
+          45.82
+        ],
+        "L2": [
+          1.59,
+          36.51
+        ],
+        "LA2": [
+          0.4,
+          19.81
+        ],
+        "M2": [
+          69.8,
+          27.01
+        ],
+        "M3": [
+          0.03,
+          134.89
+        ],
+        "M4": [
+          0.73,
+          102.99
+        ],
+        "M6": [
+          0.19,
+          -177.24
+        ],
+        "M8": [
+          0.03,
+          45.34
+        ],
+        "MF": [
+          0.72,
+          -1.95
+        ],
+        "MKS2": [
+          0.18,
+          5.6
+        ],
+        "MM": [
+          0.28,
+          -13.97
+        ],
+        "MN4": [
+          0.36,
+          1.37
+        ],
+        "MS4": [
+          0.35,
+          100.71
+        ],
+        "MSF": [
+          0.07,
+          -152.55
+        ],
+        "MSQM": [
+          0.02,
+          20.39
+        ],
+        "MTM": [
+          0.15,
+          12.05
+        ],
+        "MU2": [
+          2.85,
+          -11.35
+        ],
+        "N2": [
+          14.52,
+          13.21
+        ],
+        "N4": [
+          0.04,
+          -36.97
+        ],
+        "NU2": [
+          2.66,
+          19.42
+        ],
+        "O1": [
+          4.82,
+          -69.15
+        ],
+        "P1": [
+          1.72,
+          28.2
+        ],
+        "Q1": [
+          1.59,
+          -122.71
+        ],
+        "R2": [
+          0.23,
+          42.87
+        ],
+        "S1": [
+          0.48,
+          -21.38
+        ],
+        "S2": [
+          27.06,
+          50.14
+        ],
+        "S4": [
+          0.03,
+          -155.22
+        ],
+        "SA": [
+          0,
+          166.55
+        ],
+        "SSA": [
+          0.21,
+          0.1
+        ],
+        "T2": [
+          1.65,
+          42.45
+        ]
+      },
+      "tides": "0"
+    }
+  },
+  "fcst": [
+    {
+      "id_spot": 36048,
+      "id_model": 100,
+      "initstr": "1970010100"
+    },
+    {
+      "id_spot": 36048,
+      "id_model": 84,
+      "initstr": "2023040812"
+    },
+    {
+      "id_spot": 36048,
+      "id_model": 3,
+      "initstr": "2023040812"
+    },
+    {
+      "id_spot": 36048,
+      "id_model": 42,
+      "initstr": "2023040806"
+    },
+    {
+      "id_spot": 36048,
+      "id_model": 22,
+      "initstr": "2023040806"
+    },
+    {
+      "id_spot": 36048,
+      "id_model": 45,
+      "initstr": "2023040812"
+    },
+    {
+      "id_spot": 36048,
+      "id_model": 47,
+      "initstr": "2023040812"
+    },
+    {
+      "id_spot": 36048,
+      "id_model": 59,
+      "initstr": "2023040800"
+    },
+    {
+      "id_spot": 36048,
+      "id_model": 60,
+      "initstr": "2023040800"
+    }
+  ],
+  "message": "<a href=\"/pro.php?bh\" data-ajax=\"1\" data-addclass=\"hcenter vcenter\"><div class=\"pruh-warning\">You are now viewing Windguru FREE version, upgrade to PRO and enjoy the full power of this website! </div></a>"
+}

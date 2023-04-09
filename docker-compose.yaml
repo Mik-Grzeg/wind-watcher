@@ -1,0 +1,28 @@
+version: '3'
+services:
+  database:
+    image: postgres:15.2
+    ports: 
+      - 5432:5432
+    env_file:
+      - ./docker/envs/database.env
+
+  windguru_mock:
+    image: windguru_mock:latest
+    build:
+      context: ./docker/mocks/
+      args:
+        MOCK_PATH: windguru
+    ports: 
+      - 8001:8000
+
+  forecasts_ingester:
+    image: forecast_ingester:latest
+    build: 
+      context: ./services/forecasts_ingester/
+      dockerfile: ../../docker/Dockerfile
+      args:
+        APP_NAME: forecasts_ingester
+    environment:
+      RUSTAPP_WINDGURU_URL: http://windguru_mock:8000
+
