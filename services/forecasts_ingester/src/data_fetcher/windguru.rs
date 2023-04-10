@@ -4,7 +4,7 @@ use crate::{
 };
 use anyhow::anyhow;
 use async_trait::async_trait;
-use reqwest::header::{HeaderValue, COOKIE};
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -12,7 +12,7 @@ use std::{collections::HashMap, time::Duration};
 use tracing::instrument;
 
 use super::DataFetcher;
-use reqwest::{header::HeaderMap, Client, ClientBuilder};
+use reqwest::{Client, ClientBuilder};
 
 const WINDGURUR_REFERER: &str = "https://www.windguru.cz";
 
@@ -133,7 +133,7 @@ impl DataFetcher<WindguruForecast> for WindguruSpotClient {
         let forecast_query_params =
             BTreeMap::<IdModel, ForecastQueryParams>::from(forecast_spot_metadata);
         let forecast = self
-            .get_forecast_data(&cookies, &forecast_query_params.get(&3).unwrap())
+            .get_forecast_data(&cookies, forecast_query_params.get(&3).unwrap())
             .await
             .map_err(|err| anyhow!("Unable to fetch data err={}", err))?;
 

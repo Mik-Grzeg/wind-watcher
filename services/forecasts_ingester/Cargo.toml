@@ -14,6 +14,7 @@ reqwest = { version = "0.11.16", features = ["cookies", "json"] }
 serde = { version = "1.0.159", features = ["derive"] }
 serde_json = "1.0.95"
 serde_with = { version = "2.3.2", features = ["chrono"] }
+sqlx = { version = "0.6.3", features = ["runtime-tokio-native-tls", "postgres", "chrono", "migrate"] }
 tokio = { version = "1.27.0", features = ["rt", "macros", "rt-multi-thread"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"
@@ -21,3 +22,11 @@ tracing-subscriber = "0.3.16"
 [lib]
 name="lib"
 src="src/lib.rs"
+
+[[bin]]
+name="forecasts_ingester"
+path="src/bin/app.rs"
+
+[[bin]]
+name="forecasts_ingester_migrator"
+path="src/bin/migrator.rs"

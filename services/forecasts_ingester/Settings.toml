@@ -1,2 +1,8 @@
 windguru_url = "http://localhost:8001"
 
+[storage]
+type = "postgresql"
+
+[storage.config] 
+connection_url = ""
+

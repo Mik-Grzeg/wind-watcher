@@ -1,6 +1,6 @@
 version: '3'
 services:
-  database:
+  postgres:
     image: postgres:15.2
     ports: 
       - 5432:5432
@@ -22,7 +22,31 @@ services:
       context: ./services/forecasts_ingester/
       dockerfile: ../../docker/Dockerfile
       args:
-        APP_NAME: forecasts_ingester
+        SERVICE_NAME: forecasts_ingester
+        BINARY_NAME: forecasts_ingester
+        BINARY_PATH: bin/app.rs
+    command: 
+      - forecasts_ingester
     environment:
-      RUSTAPP_WINDGURU_URL: http://windguru_mock:8000
+      RUSTAPP__WINDGURU_URL: http://windguru_mock:8000
+      RUSTAPP__STORAGE__TYPE: postgresql
+      RUSTAPP__STORAGE__CONFIG__CONNECTION_URL: postgres://username:password@postgres/windudindu
+    depends_on:
+      - postgres
+      - forecasts_ingester_migrator
+
+  forecasts_ingester_migrator:
+    image: forecast_ingester_migrator:latest
+    build: 
+      context: ./services/forecasts_ingester/
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: forecasts_ingester
+        BINARY_NAME: forecasts_ingester_migrator
+        BINARY_PATH: bin/migrator.rs
+    command: 
+      - forecasts_ingester_migrator
+    environment:
+      RUSTAPP__TYPE: postgresql
+      RUSTAPP__CONFIG__CONNECTION_URL: postgres://username:password@postgres/windudindu
 

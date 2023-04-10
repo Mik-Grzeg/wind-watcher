@@ -18,5 +18,5 @@ async fn main() {
 
     tracing::info!("Starting forecast_ingester with settings: {}", settings);
     let windguru_spot_client = WindguruSpotClient::from(settings);
-    let data = windguru_spot_client.fetch_forecast().await.unwrap();
+    let _data = windguru_spot_client.fetch_forecast().await.unwrap();
 }

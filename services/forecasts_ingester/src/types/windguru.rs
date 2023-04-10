@@ -1,7 +1,7 @@
 use std::{collections::HashMap, time::Duration};
 
 use chrono::{DateTime, Utc};
-use serde::{de::Visitor, Deserialize};
+use serde::Deserialize;
 use serde_json::Value;
 use serde_with::{serde_as, DurationSeconds};
 
@@ -83,7 +83,7 @@ mod windguru_wg_format {
     use chrono::{DateTime, TimeZone, Utc};
     use serde::{Deserialize, Deserializer};
 
-    const FORMAT: &'static str = "%Y-%m-%d %H:%M:%S";
+    const FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
     where
