@@ -8,7 +8,7 @@ RUN cargo new --bin ${SERVICE_NAME} \
   && mkdir -p "${SERVICE_NAME}/src/${BINARY_PATH%/*}" \
   && cp ${SERVICE_NAME}/src/main.rs ${SERVICE_NAME}/src/${BINARY_PATH}
 
-RUN apt-get update && apt-get install --yes libpq-dev tree
+RUN apt-get update && apt-get install --yes libpq-dev ca-certificates 
 
 WORKDIR ${SERVICE_NAME}
 
@@ -33,7 +33,7 @@ RUN groupadd ${APP_USER} \
   && chown ${APP_USER}:${APP_USER} ${APP}
 ENV PATH=$PATH:/${APP}
 
-RUN apt-get update && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ca-certificates libpq-dev && rm -rf /var/lib/apt/lists/*
 
 COPY --chown=${APP_USER}:${APP_USER} --from=builder /${SERVICE_NAME}/target/release/${BINARY_NAME} ${APP}/
 COPY migrations/* ${APP}/migrations/

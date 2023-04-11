@@ -2,17 +2,25 @@ use std::path::Path;
 
 use lib::config::ConfigCache;
 use lib::config::DataStorage;
+use lib::logging::init_logger;
+use serde::Deserialize;
 use sqlx::{migrate::Migrator, Pool, Postgres};
 
-fn init_config() -> DataStorage {
-    ConfigCache::new().into::<DataStorage>()
+#[derive(Deserialize)]
+struct Config {
+    pub storage: DataStorage,
+}
+
+fn init_config() -> Config {
+    ConfigCache::new().into::<Config>()
 }
 
 #[tokio::main]
 async fn main() {
+    init_logger();
     let config = init_config();
 
-    match config {
+    match config.storage {
         DataStorage::S3(_config) => unimplemented!(),
         DataStorage::Postgresql(config) => {
             let migrations_path = Path::new("./migrations");
@@ -24,6 +32,7 @@ async fn main() {
                 .await
                 .unwrap();
             migrator.run(&pool).await.unwrap();
+            tracing::info!("Storage schema migration was successfull");
         }
     }
 }

@@ -1,8 +1,11 @@
-windguru_url = "http://localhost:8001"
+[windguru]
+url = "https://www.windguru.cz"
+spots = [36048]
+models = [3]
 
 [storage]
 type = "postgresql"
 
 [storage.config] 
-connection_url = ""
+connection_url = "postgres://username:password@localhost:5432/windudindu"
 

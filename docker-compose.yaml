@@ -28,9 +28,11 @@ services:
     command: 
       - forecasts_ingester
     environment:
-      RUSTAPP__WINDGURU_URL: http://windguru_mock:8000
+      RUSTAPP__WINDGURU__URL: http://windguru_mock:8000
       RUSTAPP__STORAGE__TYPE: postgresql
       RUSTAPP__STORAGE__CONFIG__CONNECTION_URL: postgres://username:password@postgres/windudindu
+    volumes:
+      - ./services/forecasts_ingester/Settings.toml:/app/Settings.toml
     depends_on:
       - postgres
       - forecasts_ingester_migrator
@@ -47,6 +49,6 @@ services:
     command: 
       - forecasts_ingester_migrator
     environment:
-      RUSTAPP__TYPE: postgresql
-      RUSTAPP__CONFIG__CONNECTION_URL: postgres://username:password@postgres/windudindu
+      RUSTAPP__STORAGE__TYPE: postgresql
+      RUSTAPP__STORAGE__CONFIG__CONNECTION_URL: postgres://username:password@postgres/windudindu
 

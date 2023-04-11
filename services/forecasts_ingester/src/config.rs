@@ -1,8 +1,9 @@
 use std::fmt::Display;
 
 use config::Config;
-use serde::{Deserialize};
+use serde::Deserialize;
 
+use crate::types::windguru::WindguruConfig;
 
 pub fn init_config() -> Settings {
     ConfigCache::new().into::<Settings>()
@@ -50,7 +51,7 @@ pub struct PostgresqlConfig {
 
 #[derive(Deserialize, Debug)]
 pub struct Settings {
-    pub windguru_url: String,
+    pub windguru: WindguruConfig,
     pub storage: DataStorage,
 }
 
