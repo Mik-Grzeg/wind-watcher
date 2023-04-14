@@ -1,4 +1,4 @@
-use super::ingesting::IngestForecastsMsg;
+use super::ingesting::WindguruIngestForecastMsg;
 use crate::types::windguru::{IdSpot, WindguruForecasts};
 use actix::Message;
 

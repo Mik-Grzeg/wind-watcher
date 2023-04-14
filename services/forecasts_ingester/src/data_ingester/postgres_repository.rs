@@ -1,5 +1,5 @@
 use crate::{
-    actors::messages::ingesting::IngestForecastsMsg,
+    actors::messages::ingesting::WindguruIngestForecastMsg,
     types::windguru::{Spot, WindguruForecasts},
 };
 
@@ -9,8 +9,9 @@ use sqlx::{postgres::PgQueryResult, PgPool, QueryBuilder};
 
 #[async_trait]
 impl DataIngester for PgPool {
-    async fn ingest_forecast(&self, data: IngestForecastsMsg) -> Result<(), anyhow::Error> {
-        let IngestForecastsMsg { forecast, spot } = data;
+    async fn ingest_forecast(&self, data: WindguruIngestForecastMsg) -> Result<(), anyhow::Error> {
+        let WindguruIngestForecastMsg { forecast, spot } = data;
+        
         let mut query_builder = QueryBuilder::new(
             r#"INSERT INTO forecasts(
                 id_spot,

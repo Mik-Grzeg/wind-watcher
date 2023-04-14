@@ -1,63 +1,33 @@
+use super::super::errors::FetchingError;
 use crate::{
-    actors::messages::{fetching::FetchNewForecastsMsg, ingesting::IngestForecastsMsg},
+    actors::messages::{fetching::FetchNewForecastsMsg, ingesting::WindguruIngestForecastMsg},
     config::Settings,
     types::windguru::{ForecastParamsMetadata, IdModel, IdSpot, Spot, WindguruForecasts},
 };
 use anyhow::anyhow;
+use super::super::Authorizer;
 use async_trait::async_trait;
+use std::{str::FromStr, sync::Arc};
 
-use super::DataFetcher;
-use reqwest::{Client, ClientBuilder};
+use super::super::DataFetcher;
+use super::super::FetchingClient;
+use reqwest::{
+    cookie::{Cookie, CookieStore, Jar},
+    Client, ClientBuilder, Url,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, fmt::Display};
 use std::{collections::HashMap, time::Duration};
 use tracing::instrument;
 
 const WINDGURUR_REFERER: &str = "https://www.windguru.cz";
 
-#[derive(Debug)]
-pub struct WindguruSpotClient {
-    client: Client,
-    url: String,
-}
-
-impl WindguruSpotClient {
-    pub fn new(url: String) -> Self {
-        let client = ClientBuilder::new()
-            .connect_timeout(Duration::from_secs(30))
-            .cookie_store(true)
-            .build()
-            .unwrap();
-
-        Self { client, url }
-    }
-
-    async fn get_cookies(&self, spot: IdSpot) -> Result<String, reqwest::Error> {
-        let url = format!("{}/{}", self.url, spot);
-
-        // Get authorization cookies
-        let cookie_response = self.client.get(url).send().await?;
-
-        let cookies = cookie_response
-            .cookies()
-            .map(|cookie| format!("{}={}", cookie.name(), cookie.value()))
-            .collect::<Vec<String>>()
-            .join("; ");
-
-        tracing::debug!(
-            cookies = cookies,
-            status = cookie_response.status().as_u16(),
-            "Fetching auth cookies"
-        );
-        Ok(cookies)
-    }
-
+impl FetchingClient {
     async fn get_forecast_spot_metadata(
         &self,
         spot: IdSpot,
-        cookies: &str,
-    ) -> Result<ForecastSpotResponse, reqwest::Error> {
+    ) -> Result<ForecastSpotResponse, FetchingError> {
         let url = format!("{}/int/iapi.php", self.url);
 
         let query_params = ForecastSpotQueryParams {
@@ -69,7 +39,6 @@ impl WindguruSpotClient {
             .client
             .get(url)
             .header("Referer", WINDGURUR_REFERER)
-            .header("Cookie", cookies)
             .query(&query_params)
             .send()
             .await?;
@@ -82,16 +51,14 @@ impl WindguruSpotClient {
 
     async fn get_forecast_data(
         &self,
-        cookies: &str,
         forecast_query_params: &ForecastQueryParams,
-    ) -> Result<WindguruForecasts, reqwest::Error> {
+    ) -> Result<WindguruForecasts, FetchingError> {
         let url = format!("{}/int/iapi.php", self.url);
 
         let forecast_response = self
             .client
             .get(url)
             .header("Referer", WINDGURUR_REFERER)
-            .header("Cookie", cookies)
             .query(&forecast_query_params)
             .send()
             .await?;
@@ -105,37 +72,34 @@ impl WindguruSpotClient {
     }
 }
 
-impl From<&Settings> for WindguruSpotClient {
+impl From<&Settings> for FetchingClient {
     fn from(settings: &Settings) -> Self {
-        WindguruSpotClient::new(settings.windguru.url.clone())
+        FetchingClient::new(settings.windguru.url.clone())
     }
 }
 
 #[async_trait]
-impl DataFetcher<IngestForecastsMsg, FetchNewForecastsMsg> for WindguruSpotClient {
+impl DataFetcher for FetchingClient {
+    type InMessage = FetchNewForecastsMsg;
+    type OutMessage = WindguruIngestForecastMsg;
+
     #[instrument(skip(self))]
     async fn fetch_forecast(
         &self,
         params: FetchNewForecastsMsg,
-    ) -> Result<IngestForecastsMsg, anyhow::Error> {
-        let cookies = self
-            .get_cookies(params.spot)
-            .await
-            .map_err(|err| anyhow!("Unable to fetch cookies err={}", err))?;
+    ) -> Result<WindguruIngestForecastMsg, FetchingError> {
+        self.authorize().await?;
 
-        let ForecastSpotResponse { models, spots } = self
-            .get_forecast_spot_metadata(params.spot, &cookies)
-            .await
-            .map_err(|err| anyhow!("Unable to fetch metadata err={}", err))?;
+        let ForecastSpotResponse { models, spots } =
+            self.get_forecast_spot_metadata(params.spot).await?;
 
         let spot = Spot::try_from(spots)?;
         let forecast_query_params = BTreeMap::<IdModel, ForecastQueryParams>::from(models);
         let forecast = self
-            .get_forecast_data(&cookies, forecast_query_params.get(&3).unwrap())
-            .await
-            .map_err(|err| anyhow!("Unable to fetch data err={}", err))?;
+            .get_forecast_data(forecast_query_params.get(&3).unwrap())
+            .await?;
 
-        Ok(IngestForecastsMsg { forecast, spot })
+        Ok(WindguruIngestForecastMsg { forecast, spot })
     }
 }
 

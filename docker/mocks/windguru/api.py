@@ -1,4 +1,4 @@
-import falcon, json, logging
+import falcon, json, logging, datetime
 
 
 class CookiesSetter(object):
@@ -6,12 +6,10 @@ class CookiesSetter(object):
     deviceid='9a9936815593629d897e4dfb8fb25058',
     langc='en-')
 
-    def on_get(self, req, resp, spot_id):
-        if spot_id == 36048:
-            for cookie_name, cookie_val in self.cookies.items():
-                resp.set_cookie(cookie_name, cookie_val, max_age=3000, domain='www.windguru.cz') 
-        else:
-            resp.status = falcon.HTTP_404
+    def on_get(self, req, resp):
+        resp.set_cookie('session', self.cookies['session'], path='/', secure=True, domain='localhost', max_age=1800, expires=datetime.datetime.now() + datetime.timedelta(hours=3))
+        resp.set_cookie('deviceid', self.cookies['deviceid'], path='/', secure=True, max_age=1800, expires=datetime.datetime.now() + datetime.timedelta(hours=3))
+        resp.set_cookie('langc', self.cookies['langc'], path='/', secure=True, max_age=1800, expires=datetime.datetime.now() + datetime.timedelta(hours=3))
 
 class ForecastResource:
     def __init__(self):
@@ -49,6 +47,6 @@ class ForecastResource:
 
 
 api = falcon.App()
-api.add_route('/{spot_id:int}', CookiesSetter())
+api.add_route('/', CookiesSetter())
 api.add_route('/int/iapi.php', ForecastResource())
 

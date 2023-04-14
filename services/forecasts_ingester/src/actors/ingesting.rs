@@ -3,7 +3,7 @@ use crate::types::windguru::WindguruForecasts;
 use actix::{Actor, Context, Handler, ResponseFuture};
 use sqlx::{query::Query, Database, Pool, Postgres, QueryBuilder};
 
-use super::messages::ingesting::IngestForecastsMsg;
+use super::messages::ingesting::WindguruIngestForecastMsg;
 
 pub struct IngestingActor<D>
 where
@@ -28,13 +28,13 @@ where
     type Context = Context<Self>;
 }
 
-impl<D> Handler<IngestForecastsMsg> for IngestingActor<D>
+impl<D> Handler<WindguruIngestForecastMsg> for IngestingActor<D>
 where
     D: DataIngester + Clone + Unpin + 'static,
 {
     type Result = ResponseFuture<Result<(), anyhow::Error>>;
 
-    fn handle(&mut self, msg: IngestForecastsMsg, ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, msg: WindguruIngestForecastMsg, ctx: &mut Context<Self>) -> Self::Result {
         Box::pin({
             let repo = self.repository.clone();
             async move { repo.ingest_forecast(msg).await }

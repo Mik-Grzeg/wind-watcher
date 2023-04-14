@@ -2,10 +2,10 @@ use crate::{
     actors::{
         fetching::FetchingActor,
         ingesting::IngestingActor,
-        messages::{fetching::FetchNewForecastsMsg, ingesting::IngestForecastsMsg},
+        messages::{fetching::FetchNewForecastsMsg, ingesting::WindguruIngestForecastMsg},
     },
     config::{DataStorage, Settings},
-    data_fetcher::{windguru::WindguruSpotClient, DataFetcher},
+    data_fetcher::{FetchingClient, DataFetcher},
     data_ingester::DataIngester,
     types::windguru::{IdModel, IdSpot, WindguruForecasts},
 };
@@ -24,7 +24,7 @@ async fn issue_fetching_msgs<DF, DI>(
     _models: &Vec<IdModel>,
     fetcher_addr: &Addr<FetchingActor<DF, DI>>,
 ) where
-    DF: DataFetcher<IngestForecastsMsg, FetchNewForecastsMsg> + Clone + 'static,
+    DF: DataFetcher + Clone + 'static,
     DI: DataIngester + Clone + 'static,
 {
     for spot in spots {
@@ -38,7 +38,7 @@ async fn issue_fetching_msgs<DF, DI>(
 
 impl State {
     pub async fn start(settings: Settings) {
-        let data_fetcher = Arc::new(WindguruSpotClient::from(&settings));
+        let data_fetcher = Arc::new(FetchingClient::from(&settings));
 
         let data_ingester = match settings.storage {
             DataStorage::Postgresql(config) => Pool::<Postgres>::connect(&config.connection_url)
