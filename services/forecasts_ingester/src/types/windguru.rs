@@ -55,7 +55,7 @@ pub struct WgModel {
     pub rundef: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Fcst {
     pub gust: Option<f32>,
     pub flhgt: Option<i32>,

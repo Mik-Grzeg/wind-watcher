@@ -1,49 +1,52 @@
 use crate::data_fetcher::errors::FetchError;
-use crate::data_fetcher::DataFetcher;
+use crate::data_fetcher::ForecastDataFetcher;
 use crate::data_ingester::errors::IngestError;
 
 use actix::*;
 
+use super::messages::fetching::{Fetch};
+use super::messages::ingesting::{Forecast};
+
 // use super::messages::{fetching::FetchNewForecastMsg};
 
-pub struct FetchingActor<IM, OM, DF>
+pub struct FetchingActor<DF>
 where
-    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
-    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
-    DF: DataFetcher<InMessage = IM, OutMessage = OM>,
+    // IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    // OM: Message<Result = Result<(), IngestError>> + Send + 'static,
+    DF: ForecastDataFetcher,
 {
     fetcher: DF,
 }
 
-impl<IM, OM, DF> FetchingActor<IM, OM, DF>
+impl<DF> FetchingActor<DF>
 where
-    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
-    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
-    DF: DataFetcher<InMessage = IM, OutMessage = OM>,
+    // IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    // OM: Message<Result = Result<(), IngestError>> + Send + 'static,
+    DF: ForecastDataFetcher,
 {
     pub fn new(fetcher: DF) -> Self {
         Self { fetcher }
     }
 }
 
-impl<IM, OM, DF> Actor for FetchingActor<IM, OM, DF>
+impl<DF> Actor for FetchingActor<DF>
 where
-    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
-    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
-    DF: DataFetcher<InMessage = IM, OutMessage = OM> + 'static,
+    // IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    // OM: Message<Result = Result<(), IngestError>> + Send + 'static,
+    DF: ForecastDataFetcher + 'static
 {
     type Context = Context<Self>;
 }
 
-impl<IM, OM, DF> Handler<IM> for FetchingActor<IM, OM, DF>
+impl<DF> Handler<Box<dyn Fetch>> for FetchingActor<DF>
 where
-    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
-    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
-    DF: DataFetcher<InMessage = IM, OutMessage = OM> + Clone + 'static,
+    // IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    // OM: Message<Result = Result<(), IngestError>> + Send + 'static,
+    DF: ForecastDataFetcher + Clone + 'static,
 {
-    type Result = ResponseFuture<Result<OM, FetchError>>;
+    type Result = ResponseFuture<Result<Box<dyn Forecast>, FetchError>>;
 
-    fn handle(&mut self, msg: IM, _ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, msg: Box<dyn Fetch>, _ctx: &mut Context<Self>) -> Self::Result {
         Box::pin({
             let fetcher = self.fetcher.clone();
             async move {

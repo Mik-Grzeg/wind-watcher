@@ -7,7 +7,7 @@ use reqwest::{
 
 use std::{str::FromStr, sync::Arc, time::Duration};
 
-use crate::data_ingester::errors::IngestError;
+use crate::{data_ingester::errors::IngestError, actors::messages::{ingesting::Forecast, fetching::Fetch}};
 
 use self::errors::FetchError;
 
@@ -17,28 +17,24 @@ mod authorization;
 
 
 #[async_trait]
-pub trait DataFetcher: Send + Sync + Unpin {
-    type OutMessage;
-    type InMessage;
-
-    async fn fetch_forecast(&self, params: Self::InMessage)
-        -> Result<Self::OutMessage, FetchError>;
+pub trait ForecastDataFetcher: Send + Sync + Unpin {
+    async fn fetch_forecast(&self, params: Box<dyn Fetch>)
+        -> Result<Box<dyn Forecast>, FetchError>;
+    async fn fetch_station<IM: Send, OM: Send>(&self, params: IM)
+        -> Result<OM, FetchError>;
 }
 
 #[async_trait]
-impl<OM, IM, DF: DataFetcher<InMessage = IM, OutMessage = OM>> DataFetcher for Arc<DF>
-where
-    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
-    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
-{
-    type InMessage = IM;
-    type OutMessage = OM;
-
+impl<DF: ForecastDataFetcher> ForecastDataFetcher for Arc<DF> {
     async fn fetch_forecast(
         &self,
-        params: Self::InMessage,
-    ) -> Result<Self::OutMessage, FetchError> {
+        params: Box<dyn Fetch>,
+    ) -> Result<Box<dyn Forecast>, FetchError> {
         self.as_ref().fetch_forecast(params).await
+    }
+
+    async fn fetch_station<C: Send, D: Send>(&self, params: C) -> Result<D, FetchError> {
+        self.as_ref().fetch_station(params).await
     }
 }
 

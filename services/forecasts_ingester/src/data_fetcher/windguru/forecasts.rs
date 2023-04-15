@@ -1,14 +1,14 @@
-use super::super::errors::FetchError;
 use super::super::authorization::Authorizer;
+use super::super::errors::FetchError;
 use crate::{
-    actors::messages::{fetching::WindguruForecastFetchMsg, ingesting::WindguruIngestForecastMsg},
+    actors::messages::{fetching::{WindguruForecastFetchMsg, Fetch}, ingesting::{WindguruIngestForecastMsg, Forecast}},
     config::Settings,
     types::windguru::{ForecastParamsMetadata, IdModel, IdSpot, Spot, WindguruForecasts},
 };
 
 use async_trait::async_trait;
 
-use super::super::DataFetcher;
+use super::super::ForecastDataFetcher;
 use super::super::FetchingClient;
 
 use serde::{Deserialize, Serialize};
@@ -19,54 +19,54 @@ use tracing::instrument;
 
 const WINDGURUR_REFERER: &str = "https://www.windguru.cz";
 
-impl FetchingClient {
-    async fn get_forecast_spot_metadata(
-        &self,
-        spot: IdSpot,
-    ) -> Result<ForecastSpotResponse, FetchError> {
-        let url = format!("{}/int/iapi.php", self.url);
+async fn get_forecast_spot_metadata(
+    fetcher: &FetchingClient,
+    spot: IdSpot,
+) -> Result<ForecastSpotResponse, FetchError> {
+    let url = format!("{}/int/iapi.php", fetcher.url);
 
-        let query_params = ForecastSpotQueryParams {
-            id_spot: spot,
-            method: WindguruMethod::ForecastSpot,
-        };
+    let query_params = ForecastSpotQueryParams {
+        id_spot: spot,
+        method: WindguruMethod::ForecastSpot,
+    };
 
-        let forecast_spot_response = self
-            .client
-            .get(url)
-            .header("Referer", WINDGURUR_REFERER)
-            .query(&query_params)
-            .send()
-            .await?;
+    let forecast_spot_response = fetcher
+        .client
+        .get(url)
+        .header("Referer", WINDGURUR_REFERER)
+        .query(&query_params)
+        .send()
+        .await?;
 
-        let _response_status = forecast_spot_response.status().as_u16();
-        let forecast_metadata = forecast_spot_response.json().await?;
+    let _response_status = forecast_spot_response.status().as_u16();
+    let forecast_metadata = forecast_spot_response.json().await?;
 
-        Ok(forecast_metadata)
-    }
-
-    async fn get_forecast_data(
-        &self,
-        forecast_query_params: &ForecastQueryParams,
-    ) -> Result<WindguruForecasts, FetchError> {
-        let url = format!("{}/int/iapi.php", self.url);
-
-        let forecast_response = self
-            .client
-            .get(url)
-            .header("Referer", WINDGURUR_REFERER)
-            .query(&forecast_query_params)
-            .send()
-            .await?;
-
-        let response_status = forecast_response.status().as_u16();
-        tracing::debug!(response_status = response_status, "Fetching forecast");
-
-        let forecasts = forecast_response.json().await?;
-
-        Ok(forecasts)
-    }
+    Ok(forecast_metadata)
 }
+
+async fn get_forecast_data(
+    fetcher: &FetchingClient,
+    forecast_query_params: &ForecastQueryParams,
+) -> Result<WindguruForecasts, FetchError> {
+    let url = format!("{}/int/iapi.php", fetcher.url);
+
+    let forecast_response = fetcher
+        .client
+        .get(url)
+        .header("Referer", WINDGURUR_REFERER)
+        .query(&forecast_query_params)
+        .send()
+        .await?;
+
+    let response_status = forecast_response.status().as_u16();
+    tracing::debug!(response_status = response_status, "Fetching forecast");
+
+    let forecasts = forecast_response.json().await?;
+
+    Ok(forecasts)
+}
+
+impl FetchingClient {}
 
 impl From<&Settings> for FetchingClient {
     fn from(settings: &Settings) -> Self {
@@ -75,27 +75,29 @@ impl From<&Settings> for FetchingClient {
 }
 
 #[async_trait]
-impl DataFetcher for FetchingClient {
-    type InMessage = WindguruForecastFetchMsg;
-    type OutMessage = WindguruIngestForecastMsg;
+impl ForecastDataFetcher for FetchingClient {
 
-    #[instrument(skip(self))]
+    #[instrument(skip(self, params))]
     async fn fetch_forecast(
         &self,
-        params: Self::InMessage,
-    ) -> Result<Self::OutMessage, FetchError> {
+        params: Box<dyn Fetch>
+    ) -> Result<Box<dyn Forecast>, FetchError> {
         self.authorize().await?;
 
+        let params = params.as_any().downcast_ref::<WindguruForecastFetchMsg>().unwrap();
+
         let ForecastSpotResponse { models, spots } =
-            self.get_forecast_spot_metadata(params.spot).await?;
+            get_forecast_spot_metadata(&self, params.spot).await?;
 
         let spot = Spot::try_from(spots)?;
         let forecast_query_params = BTreeMap::<IdModel, ForecastQueryParams>::from(models);
-        let forecast = self
-            .get_forecast_data(forecast_query_params.get(&3).unwrap())
-            .await?;
+        let forecast = get_forecast_data(&self, forecast_query_params.get(&3).unwrap()).await?;
 
-        Ok(WindguruIngestForecastMsg { forecast, spot })
+        Ok(Box::new(WindguruIngestForecastMsg { forecast, spot }))
+    }
+
+    async fn fetch_station<C: Send, D: Send>(&self, params: C) -> Result<D, FetchError> {
+        unimplemented!()
     }
 }
 
