@@ -1,10 +1,8 @@
-use std::marker::PhantomData;
-
 use crate::data_ingester::{errors::IngestError, DataIngester};
 
-use actix::{Actor, Context, Handler, Message, ResponseFuture};
+use actix::{Actor, Context, Handler, ResponseFuture};
 
-use super::messages::ingesting::Forecast;
+use super::messages::ingesting::IngestMsg;
 
 pub struct IngestingActor<D: DataIngester> {
     repository: D,
@@ -12,9 +10,7 @@ pub struct IngestingActor<D: DataIngester> {
 
 impl<D: DataIngester> IngestingActor<D> {
     pub fn new(repository: D) -> Self {
-        Self {
-            repository,
-        }
+        Self { repository }
     }
 }
 
@@ -25,13 +21,13 @@ where
     type Context = Context<Self>;
 }
 
-impl<D> Handler<Box<dyn Forecast>> for IngestingActor<D>
+impl<D> Handler<IngestMsg> for IngestingActor<D>
 where
     D: DataIngester + Clone + Unpin + 'static,
 {
     type Result = ResponseFuture<Result<(), IngestError>>;
 
-    fn handle(&mut self, msg: Box<dyn Forecast>, _ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, msg: IngestMsg, _ctx: &mut Context<Self>) -> Self::Result {
         Box::pin({
             let repo = self.repository.clone();
             async move { repo.ingest_forecast(msg).await }

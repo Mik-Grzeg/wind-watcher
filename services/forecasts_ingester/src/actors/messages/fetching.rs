@@ -1,38 +1,25 @@
-use std::any::Any;
-use std::fmt::{Display, Debug};
+use std::fmt::Display;
 
-use super::ingesting::{WindguruIngestForecastMsg, Forecast};
+use super::ingesting::IngestMsg;
 use crate::data_fetcher::errors::FetchError;
 use crate::types::windguru::IdSpot;
 use actix::Message;
 
 #[derive(Message)]
-#[rtype(result = "Result<Box<dyn Forecast>, FetchError>")]
+#[rtype(result = "Result<IngestMsg, FetchError>")]
+pub enum FetchMsg {
+    WindguruForecast(WindguruForecastFetchMsg),
+}
+
 pub struct WindguruForecastFetchMsg {
     pub spot: IdSpot,
 }
 
-impl Display for WindguruForecastFetchMsg {
+impl Display for FetchMsg {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "WindguruForecastFetchMsg")
+        match self {
+            FetchMsg::WindguruForecast(_) => write!(f, "WindguruForecastFetchMsg"),
+            _ => unimplemented!(),
+        }
     }
 }
-
-impl Fetch for WindguruForecastFetchMsg {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-}
-
-impl Message for dyn Fetch {
-    type Result = Result<Box<dyn Forecast>, FetchError>;
-}
-
-impl Message for Box<dyn Fetch> {
-    type Result = Result<Box<dyn Forecast>, FetchError>;
-}
-
-pub trait Fetch: Send {
-    fn as_any(&self) -> &dyn Any;
-}
-

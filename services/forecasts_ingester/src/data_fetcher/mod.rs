@@ -1,35 +1,26 @@
-use actix::Message;
 use async_trait::async_trait;
-use reqwest::{
-    cookie::{CookieStore, Jar},
-    Client, ClientBuilder, Url,
-};
+use reqwest::{cookie::Jar, Client, ClientBuilder, Url};
 
 use std::{str::FromStr, sync::Arc, time::Duration};
 
-use crate::{data_ingester::errors::IngestError, actors::messages::{ingesting::Forecast, fetching::Fetch}};
+use crate::actors::messages::{fetching::FetchMsg, ingesting::IngestMsg};
 
 use self::errors::FetchError;
 
+mod authorization;
 pub mod errors;
 pub mod windguru;
-mod authorization;
-
 
 #[async_trait]
 pub trait ForecastDataFetcher: Send + Sync + Unpin {
-    async fn fetch_forecast(&self, params: Box<dyn Fetch>)
-        -> Result<Box<dyn Forecast>, FetchError>;
-    async fn fetch_station<IM: Send, OM: Send>(&self, params: IM)
-        -> Result<OM, FetchError>;
+    async fn fetch_forecast(&self, params: FetchMsg) -> Result<IngestMsg, FetchError>;
+
+    async fn fetch_station<IM: Send, OM: Send>(&self, params: IM) -> Result<OM, FetchError>;
 }
 
 #[async_trait]
 impl<DF: ForecastDataFetcher> ForecastDataFetcher for Arc<DF> {
-    async fn fetch_forecast(
-        &self,
-        params: Box<dyn Fetch>,
-    ) -> Result<Box<dyn Forecast>, FetchError> {
+    async fn fetch_forecast(&self, params: FetchMsg) -> Result<IngestMsg, FetchError> {
         self.as_ref().fetch_forecast(params).await
     }
 
@@ -59,4 +50,3 @@ impl FetchingClient {
         Self { client, url, jar }
     }
 }
-

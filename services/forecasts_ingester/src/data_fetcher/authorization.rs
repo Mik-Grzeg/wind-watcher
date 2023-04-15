@@ -1,6 +1,6 @@
 use super::FetchingClient;
-use async_trait::async_trait;
 use crate::data_fetcher::errors::FetchError;
+use async_trait::async_trait;
 use reqwest::cookie::CookieStore;
 
 #[async_trait]
@@ -26,5 +26,4 @@ impl Authorizer for FetchingClient {
 
         Ok(())
     }
-
 }

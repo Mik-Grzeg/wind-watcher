@@ -3,8 +3,8 @@ use crate::{
         fetching::FetchingActor,
         ingesting::IngestingActor,
         messages::{
-            fetching::{Fetch, WindguruForecastFetchMsg},
-            ingesting::{Forecast, WindguruIngestForecastMsg},
+            fetching::{FetchMsg, WindguruForecastFetchMsg},
+            ingesting::IngestMsg,
         },
     },
     config::{DataStorage, Settings},
@@ -32,29 +32,21 @@ async fn issue_fetching_msgs<DF, DI>(
     DF: ForecastDataFetcher + Clone + 'static,
     DI: DataIngester + Clone + 'static,
 {
-    let mut fetch_tasks: JoinSet<Result<Result<Box<dyn Forecast>, FetchError>, MailboxError>> =
+    let mut fetch_tasks: JoinSet<Result<Result<IngestMsg, FetchError>, MailboxError>> =
         JoinSet::new();
     let mut ingest_tasks: JoinSet<Result<Result<(), IngestError>, MailboxError>> = JoinSet::new();
 
     spots.iter().for_each(|spot| {
-        let msg = WindguruForecastFetchMsg { spot: *spot };
+        let msg = FetchMsg::WindguruForecast(WindguruForecastFetchMsg { spot: *spot });
 
         tracing::debug!(spot = spot, "issueing fetch message {}", msg);
-        fetch_tasks.spawn(fetcher_addr.send(Box::new(msg)));
+        fetch_tasks.spawn(fetcher_addr.send(msg));
     });
 
     while let Some(res) = fetch_tasks.join_next().await {
         let res = res.unwrap().unwrap().unwrap();
-        let downcasted_res = (&*res)
-            .as_any()
-            .downcast_ref::<WindguruIngestForecastMsg>()
-            .unwrap();
 
-        tracing::debug!(
-            spot = downcasted_res.spot.id,
-            "issueing ingest message {}",
-            res
-        );
+        tracing::debug!("issueing ingest message {}", res);
         ingest_tasks.spawn(ingester_addr.send(res));
     }
 

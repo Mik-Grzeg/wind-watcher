@@ -1,11 +1,10 @@
 use crate::data_fetcher::errors::FetchError;
 use crate::data_fetcher::ForecastDataFetcher;
-use crate::data_ingester::errors::IngestError;
 
 use actix::*;
 
-use super::messages::fetching::{Fetch};
-use super::messages::ingesting::{Forecast};
+use super::messages::fetching::FetchMsg;
+use super::messages::ingesting::IngestMsg;
 
 // use super::messages::{fetching::FetchNewForecastMsg};
 
@@ -33,20 +32,20 @@ impl<DF> Actor for FetchingActor<DF>
 where
     // IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
     // OM: Message<Result = Result<(), IngestError>> + Send + 'static,
-    DF: ForecastDataFetcher + 'static
+    DF: ForecastDataFetcher + 'static,
 {
     type Context = Context<Self>;
 }
 
-impl<DF> Handler<Box<dyn Fetch>> for FetchingActor<DF>
+impl<DF> Handler<FetchMsg> for FetchingActor<DF>
 where
     // IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
     // OM: Message<Result = Result<(), IngestError>> + Send + 'static,
     DF: ForecastDataFetcher + Clone + 'static,
 {
-    type Result = ResponseFuture<Result<Box<dyn Forecast>, FetchError>>;
+    type Result = ResponseFuture<Result<IngestMsg, FetchError>>;
 
-    fn handle(&mut self, msg: Box<dyn Fetch>, _ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, msg: FetchMsg, _ctx: &mut Context<Self>) -> Self::Result {
         Box::pin({
             let fetcher = self.fetcher.clone();
             async move {

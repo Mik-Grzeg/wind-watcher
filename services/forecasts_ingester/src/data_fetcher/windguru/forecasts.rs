@@ -1,15 +1,18 @@
 use super::super::authorization::Authorizer;
 use super::super::errors::FetchError;
 use crate::{
-    actors::messages::{fetching::{WindguruForecastFetchMsg, Fetch}, ingesting::{WindguruIngestForecastMsg, Forecast}},
+    actors::messages::{
+        fetching::FetchMsg,
+        ingesting::{IngestMsg, WindguruIngestForecastMsg},
+    },
     config::Settings,
     types::windguru::{ForecastParamsMetadata, IdModel, IdSpot, Spot, WindguruForecasts},
 };
 
 use async_trait::async_trait;
 
-use super::super::ForecastDataFetcher;
 use super::super::FetchingClient;
+use super::super::ForecastDataFetcher;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -76,27 +79,30 @@ impl From<&Settings> for FetchingClient {
 
 #[async_trait]
 impl ForecastDataFetcher for FetchingClient {
-
     #[instrument(skip(self, params))]
-    async fn fetch_forecast(
-        &self,
-        params: Box<dyn Fetch>
-    ) -> Result<Box<dyn Forecast>, FetchError> {
+    async fn fetch_forecast(&self, params: FetchMsg) -> Result<IngestMsg, FetchError> {
         self.authorize().await?;
 
-        let params = params.as_any().downcast_ref::<WindguruForecastFetchMsg>().unwrap();
+        match params {
+            FetchMsg::WindguruForecast(params) => {
+                let ForecastSpotResponse { models, spots } =
+                    get_forecast_spot_metadata(self, params.spot).await?;
 
-        let ForecastSpotResponse { models, spots } =
-            get_forecast_spot_metadata(&self, params.spot).await?;
+                let spot = Spot::try_from(spots)?;
+                let forecast_query_params = BTreeMap::<IdModel, ForecastQueryParams>::from(models);
+                let forecast =
+                    get_forecast_data(self, forecast_query_params.get(&3).unwrap()).await?;
 
-        let spot = Spot::try_from(spots)?;
-        let forecast_query_params = BTreeMap::<IdModel, ForecastQueryParams>::from(models);
-        let forecast = get_forecast_data(&self, forecast_query_params.get(&3).unwrap()).await?;
-
-        Ok(Box::new(WindguruIngestForecastMsg { forecast, spot }))
+                Ok(IngestMsg::WindguruForecast(WindguruIngestForecastMsg {
+                    forecast,
+                    spot,
+                }))
+            }
+            _ => unimplemented!(),
+        }
     }
 
-    async fn fetch_station<C: Send, D: Send>(&self, params: C) -> Result<D, FetchError> {
+    async fn fetch_station<C: Send, D: Send>(&self, _params: C) -> Result<D, FetchError> {
         unimplemented!()
     }
 }
