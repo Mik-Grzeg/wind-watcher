@@ -1,40 +1,45 @@
-use crate::data_ingester::DataIngester;
-use crate::types::windguru::WindguruForecasts;
-use actix::{Actor, Context, Handler, ResponseFuture};
-use sqlx::{query::Query, Database, Pool, Postgres, QueryBuilder};
+use std::marker::PhantomData;
 
-use super::messages::ingesting::WindguruIngestForecastMsg;
+use crate::data_ingester::{errors::IngestError, DataIngester};
 
-pub struct IngestingActor<D>
+use actix::{Actor, Context, Handler, Message, ResponseFuture};
+
+pub struct IngestingActor<T, D>
 where
-    D: DataIngester,
+    D: DataIngester<T>,
 {
     repository: D,
+    _marker: PhantomData<T>,
 }
 
-impl<D> IngestingActor<D>
+impl<T, D> IngestingActor<T, D>
 where
-    D: DataIngester,
+    D: DataIngester<T>,
 {
     pub fn new(repository: D) -> Self {
-        Self { repository }
+        Self {
+            repository,
+            _marker: PhantomData,
+        }
     }
 }
 
-impl<D> Actor for IngestingActor<D>
+impl<T, D> Actor for IngestingActor<T, D>
 where
-    D: DataIngester + Unpin + 'static,
+    T: Send + Unpin + 'static,
+    D: DataIngester<T> + Unpin + 'static,
 {
     type Context = Context<Self>;
 }
 
-impl<D> Handler<WindguruIngestForecastMsg> for IngestingActor<D>
+impl<T, D> Handler<T> for IngestingActor<T, D>
 where
-    D: DataIngester + Clone + Unpin + 'static,
+    T: Message<Result = Result<(), IngestError>> + Send + Unpin + 'static,
+    D: DataIngester<T> + Clone + Unpin + 'static,
 {
-    type Result = ResponseFuture<Result<(), anyhow::Error>>;
+    type Result = ResponseFuture<Result<(), IngestError>>;
 
-    fn handle(&mut self, msg: WindguruIngestForecastMsg, ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, msg: T, _ctx: &mut Context<Self>) -> Self::Result {
         Box::pin({
             let repo = self.repository.clone();
             async move { repo.ingest_forecast(msg).await }

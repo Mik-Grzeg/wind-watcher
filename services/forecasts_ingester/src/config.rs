@@ -6,15 +6,15 @@ use serde::Deserialize;
 use crate::types::windguru::WindguruConfig;
 
 pub fn init_config() -> Settings {
-    ConfigCache::new().into::<Settings>()
+    ConfigCache::default().into::<Settings>()
 }
 
 pub struct ConfigCache {
     config: Config,
 }
 
-impl ConfigCache {
-    pub fn new() -> Self {
+impl Default for ConfigCache {
+    fn default() -> Self {
         let config = Config::builder()
             .add_source(config::File::with_name("Settings.toml").required(false))
             .add_source(
@@ -27,7 +27,9 @@ impl ConfigCache {
 
         Self { config }
     }
+}
 
+impl ConfigCache {
     pub fn into<'de, T: Deserialize<'de>>(self) -> T {
         self.config.try_deserialize().unwrap()
     }

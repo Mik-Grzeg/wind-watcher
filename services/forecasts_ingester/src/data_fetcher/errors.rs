@@ -1,8 +1,7 @@
-use reqwest::Url;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum FetchingError {
+pub enum FetchError {
     #[error("missing cookie header")]
     MissingCookies,
     #[error("unable to parse cookies to str")]
@@ -10,6 +9,5 @@ pub enum FetchingError {
     #[error("sending request failed err={0}")]
     ErrorFetchingRequest(#[from] reqwest::Error),
     #[error(transparent)]
-    Other(#[from] anyhow::Error)
+    Other(#[from] anyhow::Error),
 }
-

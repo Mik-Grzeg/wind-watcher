@@ -1,10 +1,8 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use anyhow::anyhow;
 use chrono::{DateTime, Duration, NaiveDateTime, NaiveTime, Utc};
 use serde::{de, Deserialize};
-use serde_json::Value;
-use serde_with::{serde_as, TimestampSeconds};
 
 const FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
@@ -93,8 +91,8 @@ fn deserialize_string_as_numeric<'de, T: std::str::FromStr, D: de::Deserializer<
     deserializer: D,
 ) -> Result<T, D::Error> {
     let value = String::deserialize(deserializer)?;
-    Ok(str::parse::<T>(&value)
-        .map_err(|_| serde::de::Error::custom(format!("unable to parse value: {}", value)))?)
+    str::parse::<T>(&value)
+        .map_err(|_| serde::de::Error::custom(format!("unable to parse value: {value}")))
 }
 
 impl TryFrom<HashMap<String, Spot>> for Spot {
@@ -111,7 +109,7 @@ impl TryFrom<HashMap<String, Spot>> for Spot {
             return Ok(spots.remove(0));
         };
 
-        return Err(anyhow!(error_msg));
+        Err(anyhow!(error_msg))
     }
 }
 
@@ -180,8 +178,6 @@ mod forecasts_arrays_format {
 
     #[cfg(test)]
     mod tests {
-        use super::*;
-        use pretty_assertions::{assert_eq, assert_ne};
 
         #[test]
         fn test_deserialization() {}

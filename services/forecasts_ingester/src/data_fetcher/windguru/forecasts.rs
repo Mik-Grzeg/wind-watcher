@@ -1,24 +1,20 @@
-use super::super::errors::FetchingError;
+use super::super::errors::FetchError;
+use super::super::authorization::Authorizer;
 use crate::{
-    actors::messages::{fetching::FetchNewForecastsMsg, ingesting::WindguruIngestForecastMsg},
+    actors::messages::{fetching::WindguruForecastFetchMsg, ingesting::WindguruIngestForecastMsg},
     config::Settings,
     types::windguru::{ForecastParamsMetadata, IdModel, IdSpot, Spot, WindguruForecasts},
 };
-use anyhow::anyhow;
-use super::super::Authorizer;
+
 use async_trait::async_trait;
-use std::{str::FromStr, sync::Arc};
 
 use super::super::DataFetcher;
 use super::super::FetchingClient;
-use reqwest::{
-    cookie::{Cookie, CookieStore, Jar},
-    Client, ClientBuilder, Url,
-};
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{collections::BTreeMap, fmt::Display};
-use std::{collections::HashMap, time::Duration};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
 use tracing::instrument;
 
 const WINDGURUR_REFERER: &str = "https://www.windguru.cz";
@@ -27,7 +23,7 @@ impl FetchingClient {
     async fn get_forecast_spot_metadata(
         &self,
         spot: IdSpot,
-    ) -> Result<ForecastSpotResponse, FetchingError> {
+    ) -> Result<ForecastSpotResponse, FetchError> {
         let url = format!("{}/int/iapi.php", self.url);
 
         let query_params = ForecastSpotQueryParams {
@@ -43,7 +39,7 @@ impl FetchingClient {
             .send()
             .await?;
 
-        let response_status = forecast_spot_response.status().as_u16();
+        let _response_status = forecast_spot_response.status().as_u16();
         let forecast_metadata = forecast_spot_response.json().await?;
 
         Ok(forecast_metadata)
@@ -52,7 +48,7 @@ impl FetchingClient {
     async fn get_forecast_data(
         &self,
         forecast_query_params: &ForecastQueryParams,
-    ) -> Result<WindguruForecasts, FetchingError> {
+    ) -> Result<WindguruForecasts, FetchError> {
         let url = format!("{}/int/iapi.php", self.url);
 
         let forecast_response = self
@@ -80,14 +76,14 @@ impl From<&Settings> for FetchingClient {
 
 #[async_trait]
 impl DataFetcher for FetchingClient {
-    type InMessage = FetchNewForecastsMsg;
+    type InMessage = WindguruForecastFetchMsg;
     type OutMessage = WindguruIngestForecastMsg;
 
     #[instrument(skip(self))]
     async fn fetch_forecast(
         &self,
-        params: FetchNewForecastsMsg,
-    ) -> Result<WindguruIngestForecastMsg, FetchingError> {
+        params: Self::InMessage,
+    ) -> Result<Self::OutMessage, FetchError> {
         self.authorize().await?;
 
         let ForecastSpotResponse { models, spots } =
@@ -149,7 +145,9 @@ struct ForecastMetadata {
     id_model: IdModel,
     #[serde(rename = "id_model_arr")]
     params: Vec<ForecastParamsMetadata>,
-    options: HashMap<String, Value>,
+
+    #[serde(rename = "options")]
+    _options: HashMap<String, Value>,
 }
 
 impl From<ForecastMetadataWrapper> for BTreeMap<IdModel, ForecastQueryParams> {

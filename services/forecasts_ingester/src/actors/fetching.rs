@@ -1,62 +1,55 @@
+use crate::data_fetcher::errors::FetchError;
 use crate::data_fetcher::DataFetcher;
-use crate::data_ingester::DataIngester;
-use crate::types::windguru::{IdModel, IdSpot, WindguruForecasts};
-use sqlx::Database;
-use std::sync::Arc;
+use crate::data_ingester::errors::IngestError;
 
 use actix::*;
 
-use super::ingesting::IngestingActor;
-use super::messages::{fetching::FetchNewForecastsMsg, ingesting::WindguruIngestForecastMsg};
+// use super::messages::{fetching::FetchNewForecastMsg};
 
-pub struct FetchingActor<DF, DI>
+pub struct FetchingActor<IM, OM, DF>
 where
-    DF: DataFetcher,
-    DI: DataIngester + Unpin + 'static,
+    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
+    DF: DataFetcher<InMessage = IM, OutMessage = OM>,
 {
     fetcher: DF,
-    ingesting_addr: Addr<IngestingActor<DI>>,
 }
 
-impl<DF, DI> FetchingActor<DF, DI>
+impl<IM, OM, DF> FetchingActor<IM, OM, DF>
 where
-    DF: DataFetcher,
-    DI: DataIngester + Unpin,
+    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
+    DF: DataFetcher<InMessage = IM, OutMessage = OM>,
 {
-    pub fn new(fetcher: DF, ingesting_addr: Addr<IngestingActor<DI>>) -> Self {
-        Self {
-            fetcher,
-            ingesting_addr,
-        }
+    pub fn new(fetcher: DF) -> Self {
+        Self { fetcher }
     }
 }
 
-impl<DF, DI> Actor for FetchingActor<DF, DI>
+impl<IM, OM, DF> Actor for FetchingActor<IM, OM, DF>
 where
-    DF: DataFetcher + 'static,
-    DI: DataIngester + Unpin + Send + Sync + 'static,
+    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
+    DF: DataFetcher<InMessage = IM, OutMessage = OM> + 'static,
 {
     type Context = Context<Self>;
 }
 
-impl<IM, OM, DF, DI> Handler<IM> for FetchingActor<DF, DI>
+impl<IM, OM, DF> Handler<IM> for FetchingActor<IM, OM, DF>
 where
-    IM: Message + Send,
-    OM: Message + Send,
-    DF: DataFetcher<OutMessage = OM, InMessage = IM> + Clone + 'static,
-    DI: DataIngester + Unpin + Send + Sync + Clone + 'static,
+    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
+    DF: DataFetcher<InMessage = IM, OutMessage = OM> + Clone + 'static,
 {
-    type Result = ResponseFuture<Result<(), anyhow::Error>>;
+    type Result = ResponseFuture<Result<OM, FetchError>>;
 
-    fn handle(&mut self, msg: IM, ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, msg: IM, _ctx: &mut Context<Self>) -> Self::Result {
         Box::pin({
             let fetcher = self.fetcher.clone();
-            let ingester_addr = self.ingesting_addr.clone();
             async move {
-                let msg_to_send: OM = fetcher.fetch_forecast(msg).await?;
+                let ingest_msg = fetcher.fetch_forecast(msg).await?;
 
-                ingester_addr.send(msg_to_send).await??;
-                Ok(())
+                Ok(ingest_msg)
             }
         })
     }

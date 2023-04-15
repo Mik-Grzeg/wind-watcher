@@ -1,17 +1,15 @@
-use crate::{
-    actors::messages::ingesting::WindguruIngestForecastMsg,
-    types::windguru::{Spot, WindguruForecasts},
-};
+use crate::actors::messages::ingesting::WindguruIngestForecastMsg;
 
+use super::errors::IngestError;
 use super::DataIngester;
 use async_trait::async_trait;
-use sqlx::{postgres::PgQueryResult, PgPool, QueryBuilder};
+use sqlx::{postgres::PgDatabaseError, PgPool, QueryBuilder};
 
 #[async_trait]
-impl DataIngester for PgPool {
-    async fn ingest_forecast(&self, data: WindguruIngestForecastMsg) -> Result<(), anyhow::Error> {
+impl DataIngester<WindguruIngestForecastMsg> for PgPool {
+    async fn ingest_forecast(&self, data: WindguruIngestForecastMsg) -> Result<(), IngestError> {
         let WindguruIngestForecastMsg { forecast, spot } = data;
-        
+
         let mut query_builder = QueryBuilder::new(
             r#"INSERT INTO forecasts(
                 id_spot,
@@ -71,13 +69,31 @@ impl DataIngester for PgPool {
                 );
                 Ok(())
             }
-            Err(error) => {
-                tracing::error!(
-                    error = error.to_string(),
-                    "failed to save data in postgres storage"
-                );
-                Err(error.into())
+            Err(error) => handle_pg_errors(error),
+        }
+    }
+}
+
+fn handle_pg_errors(error: sqlx::error::Error) -> Result<(), IngestError> {
+    match error {
+        sqlx::error::Error::Database(db_err) => {
+            match db_err.code() {
+                // 23505 - key is duplicated
+                // in this case it is acceptable behaviour
+                Some(std::borrow::Cow::Borrowed("23505")) => {
+                    let pg_err: Box<PgDatabaseError> = db_err.downcast();
+
+                    tracing::debug!(
+                        table = pg_err.table(),
+                        constraint = pg_err.constraint(),
+                        "data already present details={:?}",
+                        pg_err.detail()
+                    );
+                    Ok(())
+                }
+                _ => Err(db_err.into()),
             }
         }
+        _ => Err(error.into()),
     }
 }

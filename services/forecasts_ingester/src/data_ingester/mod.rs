@@ -1,21 +1,22 @@
 use async_trait::async_trait;
+use errors::IngestError;
 use std::sync::Arc;
 
-use crate::{actors::messages::ingesting::WindguruIngestForecastMsg, types::windguru::WindguruForecasts};
-
+pub mod errors;
 pub mod postgres_repository;
 
 #[async_trait]
-pub trait DataIngester: Send + Sync + Unpin {
-    async fn ingest_forecast(&self, data: WindguruIngestForecastMsg) -> Result<(), anyhow::Error>;
+pub trait DataIngester<T>: Send + Sync + Unpin {
+    async fn ingest_forecast(&self, data: T) -> Result<(), IngestError>;
 }
 
 #[async_trait]
-impl<DI> DataIngester for Arc<DI>
+impl<T, DI: DataIngester<T>> DataIngester<T> for Arc<DI>
 where
-    DI: DataIngester + Send + Sync,
+    T: Send + 'static,
+    DI: DataIngester<T> + Send + Sync,
 {
-    async fn ingest_forecast(&self, data: WindguruIngestForecastMsg) -> Result<(), anyhow::Error> {
+    async fn ingest_forecast(&self, data: T) -> Result<(), IngestError> {
         self.as_ref().ingest_forecast(data).await
     }
 }

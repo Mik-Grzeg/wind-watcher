@@ -12,7 +12,7 @@ struct Config {
 }
 
 fn init_config() -> Config {
-    ConfigCache::new().into::<Config>()
+    ConfigCache::default().into::<Config>()
 }
 
 #[tokio::main]

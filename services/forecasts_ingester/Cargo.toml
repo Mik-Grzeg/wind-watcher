@@ -9,6 +9,7 @@ default-run = "forecasts_ingester"
 [dependencies]
 actix = "0.13.0"
 anyhow = "1.0.70"
+thiserror = "1.0.40"
 async-trait = "0.1.68"
 chrono = { version = "0.4.24", features = ["serde"] }
 config = "0.13.3"
@@ -23,7 +24,6 @@ tracing-subscriber = "0.3.16"
 
 aws_lambda_events = { version = "0.7.3", default-features = false, features = ["cloudwatch_events"], optional = true }
 lambda_runtime = { version = "0.7"}
-thiserror = "1.0.40"
 
 [features]
 lambda = ["aws_lambda_events"]

@@ -1,39 +1,35 @@
 use actix::Message;
 use async_trait::async_trait;
-use reqwest::{cookie::{Jar, CookieStore}, Client, ClientBuilder, Url};
-use serde::de::DeserializeOwned;
-use std::{str::FromStr, sync::Arc, time::Duration};
-
-use crate::actors::messages::{
-    fetching::FetchNewForecastsMsg, ingesting::WindguruIngestForecastMsg,
+use reqwest::{
+    cookie::{CookieStore, Jar},
+    Client, ClientBuilder, Url,
 };
 
-use self::errors::FetchingError;
+use std::{str::FromStr, sync::Arc, time::Duration};
 
-mod errors;
+use crate::data_ingester::errors::IngestError;
+
+use self::errors::FetchError;
+
+pub mod errors;
 pub mod windguru;
+mod authorization;
 
-#[async_trait]
-pub trait Authorizer {
-    async fn authorize(&self) -> Result<(), FetchingError>;
-}
 
 #[async_trait]
 pub trait DataFetcher: Send + Sync + Unpin {
     type OutMessage;
     type InMessage;
 
-    async fn fetch_forecast(
-        &self,
-        params: Self::InMessage,
-    ) -> Result<Self::OutMessage, FetchingError>;
+    async fn fetch_forecast(&self, params: Self::InMessage)
+        -> Result<Self::OutMessage, FetchError>;
 }
 
 #[async_trait]
 impl<OM, IM, DF: DataFetcher<InMessage = IM, OutMessage = OM>> DataFetcher for Arc<DF>
 where
-    OM: Message + Send,
-    IM: Message + Send,
+    IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
+    OM: Message<Result = Result<(), IngestError>> + Send + 'static,
 {
     type InMessage = IM;
     type OutMessage = OM;
@@ -41,7 +37,7 @@ where
     async fn fetch_forecast(
         &self,
         params: Self::InMessage,
-    ) -> Result<Self::OutMessage, FetchingError> {
+    ) -> Result<Self::OutMessage, FetchError> {
         self.as_ref().fetch_forecast(params).await
     }
 }
@@ -68,21 +64,3 @@ impl FetchingClient {
     }
 }
 
-#[async_trait]
-impl Authorizer for FetchingClient {
-    async fn authorize(&self) -> Result<(), FetchingError> {
-        // Get authorization cookies
-        let response = self.client.get(self.url.clone()).send().await?;
-
-        let cookies = self.jar.cookies(&self.url);
-        let cookies = cookies.ok_or(FetchingError::MissingCookies)?;
-
-        tracing::debug!(
-            cookies = cookies.to_str()?,
-            status = response.status().as_u16(),
-            "Fetching auth cookies"
-        );
-
-        Ok(())
-    }
-}
