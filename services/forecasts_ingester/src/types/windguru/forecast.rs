@@ -1,13 +1,9 @@
 use std::collections::HashMap;
 
+use super::windguru_datetime_format;
 use anyhow::anyhow;
 use chrono::{DateTime, Duration, NaiveDateTime, NaiveTime, Utc};
 use serde::{de, Deserialize};
-
-const FORMAT: &str = "%Y-%m-%d %H:%M:%S";
-
-#[derive(Deserialize, Debug)]
-struct ForecastSpotModelMetadata {}
 
 pub type IdSpot = i32;
 pub type IdModel = i32;
@@ -181,21 +177,6 @@ mod forecasts_arrays_format {
 
         #[test]
         fn test_deserialization() {}
-    }
-}
-
-mod windguru_datetime_format {
-    use super::FORMAT;
-    use chrono::{DateTime, TimeZone, Utc};
-    use serde::{Deserialize, Deserializer};
-
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-        Utc.datetime_from_str(&s, FORMAT)
-            .map_err(serde::de::Error::custom)
     }
 }
 

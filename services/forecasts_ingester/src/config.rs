@@ -3,7 +3,7 @@ use std::fmt::Display;
 use config::Config;
 use serde::Deserialize;
 
-use crate::types::windguru::WindguruConfig;
+use crate::types::windguru::forecast::WindguruConfig;
 
 pub fn init_config() -> Settings {
     ConfigCache::default().into::<Settings>()

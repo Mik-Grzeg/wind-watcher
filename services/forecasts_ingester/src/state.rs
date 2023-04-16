@@ -8,9 +8,9 @@ use crate::{
         },
     },
     config::{DataStorage, Settings},
-    data_fetcher::{errors::FetchError, FetchingClient, ForecastDataFetcher},
+    data_fetcher::{client::FetchingClient, errors::FetchError, DataFetcher},
     data_ingester::{errors::IngestError, DataIngester},
-    types::windguru::{IdModel, IdSpot},
+    types::windguru::forecast::{IdModel, IdSpot},
 };
 use actix::*;
 use sqlx::{Pool, Postgres};
@@ -19,7 +19,7 @@ use std::sync::Arc;
 use tokio::task::JoinSet;
 
 pub struct State {
-    // data_fetcher: Box<dyn ForecastDataFetcher<WindguruForecasts>>,
+    // data_fetcher: Box<dyn DataFetcher<WindguruForecasts>>,
     // data_ingester: Box<dyn DataIngester>,
 }
 
@@ -29,7 +29,7 @@ async fn issue_fetching_msgs<DF, DI>(
     fetcher_addr: &Addr<FetchingActor<DF>>,
     ingester_addr: &Addr<IngestingActor<DI>>,
 ) where
-    DF: ForecastDataFetcher + Clone + 'static,
+    DF: DataFetcher + Clone + 'static,
     DI: DataIngester + Clone + 'static,
 {
     let mut fetch_tasks: JoinSet<Result<Result<IngestMsg, FetchError>, MailboxError>> =

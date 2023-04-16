@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use super::ingesting::IngestMsg;
 use crate::data_fetcher::errors::FetchError;
-use crate::types::windguru::IdSpot;
+use crate::types::windguru::forecast::IdSpot;
 use actix::Message;
 
 #[derive(Message)]
