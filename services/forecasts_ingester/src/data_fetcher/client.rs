@@ -47,6 +47,9 @@ impl DataFetcher for FetchingClient {
             FetchMsg::WindguruForecast(params) => {
                 windguru::forecasts::get_forecast(self, params).await
             }
+            FetchMsg::WindguruStation(params) => {
+                windguru::stations::get_station_data(self, params).await
+            }
             _ => unimplemented!(),
         }
     }

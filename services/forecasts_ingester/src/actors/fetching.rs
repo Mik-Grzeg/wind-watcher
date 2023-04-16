@@ -18,8 +18,6 @@ impl<DF: DataFetcher> FetchingActor<DF> {
 
 impl<DF> Actor for FetchingActor<DF>
 where
-    // IM: Message<Result = Result<OM, FetchError>> + Send + 'static,
-    // OM: Message<Result = Result<(), IngestError>> + Send + 'static,
     DF: DataFetcher + 'static,
 {
     type Context = Context<Self>;

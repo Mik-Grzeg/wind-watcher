@@ -44,3 +44,7 @@ ps:
 # Build given service
 @build SERVICE *args:
   cd services/{{SERVICE}} || cd {{SERVICE}} && cargo build {{args}}
+
+# Test given service
+@test SERVICE *args:
+  cd services/{{SERVICE}} || cd {{SERVICE}} && cargo test {{args}}

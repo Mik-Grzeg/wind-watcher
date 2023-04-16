@@ -12,11 +12,6 @@ pub enum IngestMsg {
     WindguruStationReading(WindguruStationData),
 }
 
-// pub struct WindguruStationData {
-//     pub forecast: WindguruForecasts,
-//     pub spot: Spot,
-// }
-
 pub struct WindguruForecast {
     pub forecast: WindguruForecasts,
     pub spot: Spot,
@@ -25,7 +20,8 @@ pub struct WindguruForecast {
 impl Display for IngestMsg {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            IngestMsg::WindguruForecast(_) => write!(f, "WindguruForecast"),
+            IngestMsg::WindguruForecast(_) => write!(f, "WindguruForecastIngestMsg"),
+            IngestMsg::WindguruStationReading(_) => write!(f, "WindguruStationIngestMsg"),
             _ => unimplemented!(),
         }
     }

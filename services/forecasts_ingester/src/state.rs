@@ -10,9 +10,13 @@ use crate::{
     config::{DataStorage, Settings},
     data_fetcher::{client::FetchingClient, errors::FetchError, DataFetcher},
     data_ingester::{errors::IngestError, DataIngester},
-    types::windguru::forecast::{IdModel, IdSpot},
+    types::windguru::{
+        forecast::{IdModel, IdSpot},
+        station::WindguruStationFetchParams,
+    },
 };
 use actix::*;
+use chrono::{DateTime, Duration, Utc};
 use sqlx::{Pool, Postgres};
 use std::sync::Arc;
 
@@ -21,6 +25,14 @@ use tokio::task::JoinSet;
 pub struct State {
     // data_fetcher: Box<dyn DataFetcher<WindguruForecasts>>,
     // data_ingester: Box<dyn DataIngester>,
+}
+
+fn get_yesterday_date_bounds() -> (DateTime<Utc>, DateTime<Utc>) {
+    let now = Utc::now();
+    let yesterday_start = DateTime::from_utc(now.date_naive().and_hms_opt(0, 0, 0).unwrap(), Utc);
+    let yesterday_end = yesterday_start + Duration::minutes(23 * 60 + 59);
+
+    (yesterday_start, yesterday_end)
 }
 
 async fn issue_fetching_msgs<DF, DI>(
@@ -35,12 +47,27 @@ async fn issue_fetching_msgs<DF, DI>(
     let mut fetch_tasks: JoinSet<Result<Result<IngestMsg, FetchError>, MailboxError>> =
         JoinSet::new();
     let mut ingest_tasks: JoinSet<Result<Result<(), IngestError>, MailboxError>> = JoinSet::new();
+    let (start, end) = get_yesterday_date_bounds();
 
     spots.iter().for_each(|spot| {
         let msg = FetchMsg::WindguruForecast(WindguruForecastFetchMsg { spot: *spot });
+        let station_msg = FetchMsg::WindguruStation(WindguruStationFetchParams {
+            station: 2764,
+            from: start,
+            to: end,
+            avg_minutes: 5,
+            ..Default::default()
+        });
 
-        tracing::debug!(spot = spot, "issueing fetch message {}", msg);
+        tracing::debug!(spot = spot, "issueing forecast fetch message {}", msg);
         fetch_tasks.spawn(fetcher_addr.send(msg));
+
+        tracing::debug!(
+            station = 2764,
+            "issueing station fetch message {}",
+            station_msg
+        );
+        fetch_tasks.spawn(fetcher_addr.send(station_msg));
     });
 
     while let Some(res) = fetch_tasks.join_next().await {

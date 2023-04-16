@@ -14,4 +14,4 @@ RUN pip install --user -r requirements.txt
 
 COPY --chown=api:api ${MOCK_PATH}/ /home/api/
 
-CMD gunicorn api:api --worker-class gevent -w 2 --bind 0.0.0.0:8000
+CMD gunicorn api:api --worker-class gevent -w 2 --log-level info --bind 0.0.0.0:8000
