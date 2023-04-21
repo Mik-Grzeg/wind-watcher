@@ -10,13 +10,10 @@ use crate::{
     config::{DataStorage, Settings},
     data_fetcher::{client::FetchingClient, errors::FetchError, DataFetcher},
     data_ingester::{errors::IngestError, DataIngester},
-    types::windguru::{
-        forecast::{IdModel, IdSpot},
-        station::WindguruStationFetchParams,
-    },
+    types::windguru::{forecast::{IdModel, IdSpot}, station::WindguruStationFetchParams},
 };
 use actix::*;
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Date, NaiveDate, Utc, Duration};
 use sqlx::{Pool, Postgres};
 use std::sync::Arc;
 
@@ -62,11 +59,7 @@ async fn issue_fetching_msgs<DF, DI>(
         tracing::debug!(spot = spot, "issueing forecast fetch message {}", msg);
         fetch_tasks.spawn(fetcher_addr.send(msg));
 
-        tracing::debug!(
-            station = 2764,
-            "issueing station fetch message {}",
-            station_msg
-        );
+        tracing::debug!(station = 2764, "issueing station fetch message {}", station_msg);
         fetch_tasks.spawn(fetcher_addr.send(station_msg));
     });
 

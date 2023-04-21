@@ -1,72 +1,65 @@
-import React from 'react';
-import { useState, useEffect } from 'react'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
+import React, { useEffect, useState } from 'react';
+import Chart from 'chart.js/auto';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+const mockData = [
+  { label: 'Item 1', value: 10 },
+  { label: 'Item 2', value: 20 },
+  { label: 'Item 3', value: 30 },
+  { label: 'Item 4', value: 40 },
+  { label: 'Item 5', value: 50 }
+];
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Bar Chart',
-    },
-  },
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
-
-function Wind() {
-  const [data, setData] = useState(null)
-  const [isLoading, setLoading] = useState(false)
+const BarChart = () => {
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    setLoading(true)
-    fetch('http://localhost:8000/api/wind/36048')
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data)
-        setLoading(false)
-      })
-  })
-}
+    const fetchData = async () => {
+      // const response = await fetch('https://example.com/api/data');
+      // const json = await response.json();
+      setData(mockData);
+    };
 
-export default function WindChart() {
-  return <Bar options={options} data={data} />;
-}
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const canvas = document.getElementById('myChart');
+    const ctx = canvas.getContext('2d');
+    let chart = null;
+
+    if (chart !== null) {
+      chart.destroy();
+    }
+
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.map(datum => datum.label),
+        datasets: [{
+          label: 'My Bar Chart',
+          data: data.map(datum => datum.value),
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    return () => chart.destroy();
+  }, [data]);
+
+  return (
+    <div>
+      <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+  );
+};
+
+export default BarChart;

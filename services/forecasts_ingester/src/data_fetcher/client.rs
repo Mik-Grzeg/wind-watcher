@@ -10,6 +10,8 @@ use std::{sync::Arc, time::Duration};
 use async_trait::async_trait;
 use reqwest::cookie::CookieStore;
 use reqwest::{cookie::Jar, Client, ClientBuilder, Url};
+use tracing::Level;
+use tracing::span;
 
 use super::authorization::Authorizer;
 use super::windguru;
@@ -42,6 +44,8 @@ impl DataFetcher for FetchingClient {
     #[instrument(skip(self, params))]
     async fn fetch(&self, params: FetchMsg) -> Result<IngestMsg, FetchError> {
         self.authorize().await?;
+        let span = span!(Level::INFO, "fetch data", msg = %params);
+        let _enter = span.enter();
 
         match params {
             FetchMsg::WindguruForecast(params) => {

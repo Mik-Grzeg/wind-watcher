@@ -5,6 +5,8 @@ use lib::state::State;
 
 #[cfg(feature = "lambda")]
 use aws_lambda_events::event::cloudwatch_events::CloudWatchEvent;
+#[cfg(feature = "lambda")]
+use lambda_runtime::{service_fn, Error, LambdaEvent};
 
 async fn start() {
     let settings = init_config();
@@ -19,12 +21,12 @@ async fn function_handler(event: LambdaEvent<CloudWatchEvent>) -> Result<(), Err
     Ok(())
 }
 
-#[tokio::main]
+#[actix::main]
 #[cfg(feature = "lambda")]
 async fn main() -> Result<(), Error> {
     init_logger();
 
-    run(service_fn(function_handler)).await
+    lambda_runtime::run(service_fn(function_handler)).await
 }
 
 #[actix::main]
