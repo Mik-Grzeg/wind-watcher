@@ -1,7 +1,8 @@
-use crate::actors::messages::ingesting::{IngestMsg, WindguruForecast};
+use crate::{actors::messages::ingesting::{IngestMsg, WindguruForecast}, types::windguru::station::WindguruStationData};
 
 use super::errors::IngestError;
 use super::DataIngester;
+use anyhow::anyhow;
 
 use async_trait::async_trait;
 use sqlx::{postgres::PgDatabaseError, PgPool, QueryBuilder};
@@ -10,7 +11,7 @@ use sqlx::{postgres::PgDatabaseError, PgPool, QueryBuilder};
 impl DataIngester for PgPool {
     async fn ingest_forecast(&self, data: IngestMsg) -> Result<(), IngestError> {
         match data {
-            IngestMsg::WindguruForecast(WindguruForecast { forecast, spot }) => {
+            IngestMsg::WindguruForecast(WindguruForecast { forecast }) => {
                 let mut query_builder = QueryBuilder::new(
                     r#"INSERT INTO forecasts(
                         id_spot,
@@ -46,13 +47,6 @@ impl DataIngester for PgPool {
                         .push_bind(fcst.cloud_cover_low);
                 });
 
-                sqlx::query("INSERT INTO spots (id, name, country, models) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING")
-                    .bind(spot.id)
-                    .bind(spot.name)
-                    .bind(spot.country)
-                    .bind(spot.models)
-                    .execute(self).await?;
-
                 sqlx::query(
                     "INSERT INTO models (id, identifier, name) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
                 )
@@ -73,7 +67,56 @@ impl DataIngester for PgPool {
                     Err(error) => handle_pg_errors(error),
                 }
             }
-            _ => unimplemented!(),
+            IngestMsg::WindguruStationReading(id_station, WindguruStationData{ readings, datetime_start_utc, datetime_end_utc })  => {
+                let mut query_builder = QueryBuilder::new(
+                    r#"INSERT INTO station_readings(
+                        id_spot,
+                        time,
+                        -- sunrise, to be added later on
+                        -- sunset, to be added later on
+                        wind_speed_avg,
+                        wind_max,
+                        wind_direction,
+                        temperature
+                    ) "#,
+                );
+
+                query_builder.push_values(readings.readings, |mut b, reading| {
+                    b.push_bind(id_station)
+                        .push_bind(reading.datetime_local)
+                        .push_bind(reading.wind_avg)
+                        .push_bind(reading.wind_max)
+                        .push_bind(reading.wind_direction)
+                        .push_bind(reading.temperature);
+                });
+
+                match query_builder.build().execute(self).await {
+                    Ok(rows_affected) => {
+                        tracing::debug!(
+                            rows_affected = rows_affected.rows_affected(),
+                            "sucessfuly inserted data to postgres storage"
+                        );
+                        Ok(())
+                    }
+                    Err(error) => {
+                        handle_pg_errors(error)
+                    }
+                }
+            },
+            IngestMsg::WindguruSpot(spot) => {
+                sqlx::query("INSERT INTO spots (id, name, country, models, gmt_hour_offset) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO NOTHING")
+                    .bind(spot.id)
+                    .bind(spot.name)
+                    .bind(spot.country)
+                    .bind(spot.models)
+                    .bind(spot.gmt_hour_offset)
+                    .execute(self).await?;
+                Ok(())
+            },
+            other => {
+                tracing::warn!("Unimplemented message received {other}");
+                Err(anyhow!("Unimplemented message received {other}").into())
+            }
         }
     }
 }

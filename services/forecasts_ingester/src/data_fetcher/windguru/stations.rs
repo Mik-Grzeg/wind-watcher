@@ -11,6 +11,7 @@ pub async fn get_station_data(
 ) -> Result<IngestMsg, FetchError> {
     let url = format!("{}/int/iapi.php", fetcher.url);
 
+    let id_station = params.id_station as i64;
     let request = fetcher
         .client
         .get(url)
@@ -25,6 +26,6 @@ pub async fn get_station_data(
     tracing::debug!(response_status = response_status, "fetching station data");
     response.error_for_status_ref()?;
 
-    let station_data = IngestMsg::WindguruStationReading(response.json().await?);
+    let station_data = IngestMsg::WindguruStationReading(id_station, response.json().await?);
     Ok(station_data)
 }

@@ -4,23 +4,19 @@ CREATE TABLE IF NOT EXISTS models (
   name VARCHAR(255) UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS spots (
-  id INT PRIMARY KEY,
-  name VARCHAR(255) UNIQUE NOT NULL,
-  country VARCHAR(255) NOT NULL,
-  models INTEGER[]
-);
-
 CREATE TABLE IF NOT EXISTS station_readings (
   id_spot INT NOT NULL,
   time TIMESTAMP NOT NULL,
-  sunrise TIME WITHOUT TIME zone NOT NULL,
-  sunset TIME WITHOUT TIME zone NOT NULL,
+  -- sunrise TIME WITHOUT TIME zone NOT NULL,
+  -- sunset TIME WITHOUT TIME zone NOT NULL,
+  wind_speed_avg REAL,
+  wind_max REAL,
+  wind_direction INT,
+  temperature REAL,
   PRIMARY KEY (id_spot, time),
   FOREIGN KEY (id_spot)
     REFERENCES spots (id)
 );
-
 
 CREATE TABLE IF NOT EXISTS forecasts (
   id_spot INT NOT NULL,

@@ -9,19 +9,20 @@ use actix::Message;
 #[rtype(result = "Result<(), IngestError>")]
 pub enum IngestMsg {
     WindguruForecast(WindguruForecast),
-    WindguruStationReading(WindguruStationData),
+    WindguruStationReading(i64, WindguruStationData),
+    WindguruSpot(Spot)
 }
 
 pub struct WindguruForecast {
     pub forecast: WindguruForecasts,
-    pub spot: Spot,
 }
 
 impl Display for IngestMsg {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             IngestMsg::WindguruForecast(_) => write!(f, "WindguruForecastIngestMsg"),
-            IngestMsg::WindguruStationReading(_) => write!(f, "WindguruStationIngestMsg"),
+            IngestMsg::WindguruStationReading(_, _) => write!(f, "WindguruStationIngestMsg"),
+            IngestMsg::WindguruSpot(_) => write!(f, "WindguruSpotMsg"),
             _ => unimplemented!(),
         }
     }

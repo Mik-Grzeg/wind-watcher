@@ -6,7 +6,7 @@ type IdStation = i32;
 
 #[derive(Serialize)]
 pub struct WindguruStationFetchParams {
-    pub station: IdStation,
+    pub id_station: IdStation,
     pub from: DateTime<Utc>,
     pub to: DateTime<Utc>,
     pub avg_minutes: u32,
@@ -18,7 +18,7 @@ pub struct WindguruStationFetchParams {
 impl Default for WindguruStationFetchParams {
     fn default() -> Self {
         WindguruStationFetchParams {
-            station: Default::default(),
+            id_station: Default::default(),
             from: Default::default(),
             to: Default::default(),
             avg_minutes: 5,

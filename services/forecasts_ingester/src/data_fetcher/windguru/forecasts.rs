@@ -16,7 +16,7 @@ use serde_json::Value;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 
-async fn get_forecast_spot_metadata(
+async fn get_spot_metadata(
     fetcher: &FetchingClient,
     spot: IdSpot,
 ) -> Result<ForecastSpotResponse, FetchError> {
@@ -68,7 +68,7 @@ pub async fn get_forecast(
     params: WindguruForecastFetchMsg,
 ) -> Result<IngestMsg, FetchError> {
     let ForecastSpotResponse { models, spots } =
-        get_forecast_spot_metadata(fetcher, params.spot).await?;
+        get_spot_metadata(fetcher, params.spot).await?;
 
     let spot = Spot::try_from(spots)?;
     let forecast_query_params = BTreeMap::<IdModel, ForecastQueryParams>::from(models);
@@ -76,7 +76,6 @@ pub async fn get_forecast(
 
     Ok(IngestMsg::WindguruForecast(WindguruForecast {
         forecast,
-        spot,
     }))
 }
 

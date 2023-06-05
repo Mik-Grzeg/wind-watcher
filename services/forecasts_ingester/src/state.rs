@@ -50,17 +50,17 @@ async fn issue_fetching_msgs<DF, DI>(
     let (start, end) = get_yesterday_date_bounds();
 
     spots.iter().for_each(|spot| {
-        let msg = FetchMsg::WindguruForecast(WindguruForecastFetchMsg { spot: *spot });
+        let forecast_msg = FetchMsg::WindguruForecast(WindguruForecastFetchMsg { spot: *spot });
         let station_msg = FetchMsg::WindguruStation(WindguruStationFetchParams {
-            station: 2764,
+            id_station: 2764,
             from: start,
             to: end,
             avg_minutes: 5,
             ..Default::default()
         });
 
-        tracing::debug!(spot = spot, "issueing forecast fetch message {}", msg);
-        fetch_tasks.spawn(fetcher_addr.send(msg));
+        tracing::debug!(spot = spot, "issueing forecast fetch message {}", forecast_msg);
+        fetch_tasks.spawn(fetcher_addr.send(forecast_msg));
 
         tracing::debug!(
             station = 2764,
@@ -71,14 +71,20 @@ async fn issue_fetching_msgs<DF, DI>(
     });
 
     while let Some(res) = fetch_tasks.join_next().await {
-        let res = res.unwrap().unwrap().unwrap();
-
-        tracing::debug!("issueing ingest message {}", res);
-        ingest_tasks.spawn(ingester_addr.send(res));
+        let res = res.unwrap().unwrap();
+        match res {
+            Ok(msg) => {
+                tracing::debug!("issueing ingest message {}", msg);
+                ingest_tasks.spawn(ingester_addr.send(msg));
+            },
+            Err(err) => {
+                tracing::error!("error after fetching message {}", err);
+            }
+        }
     }
 
     while let Some(res) = ingest_tasks.join_next().await {
-        res.unwrap().unwrap().unwrap();
+        let _ = res.unwrap().unwrap().unwrap();
         tracing::debug!("successully ingested data");
     }
 }

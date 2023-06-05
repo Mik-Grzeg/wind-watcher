@@ -51,7 +51,7 @@ class WindguruResource:
                 resp.text = json.dumps(self.response_body_forecast)
         elif method == 'station_data':
             logging.info("requested station data")
-            if req.params.get('station') == '2764':
+            if req.params.get('id_station') == '2764':
                 logging.debug(f"data: {self.response_body_station_data}")
                 resp.text = json.dumps(self.response_body_station_data)
             else: 

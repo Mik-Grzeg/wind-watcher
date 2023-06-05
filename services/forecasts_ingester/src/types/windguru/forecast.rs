@@ -65,8 +65,8 @@ pub struct Fcst {
     pub slhgt: Option<i32>,
     pub precipitation: Option<i32>,
     pub temperature: Option<f32>,
-    pub forecast_for: DateTime<Utc>,
-    pub forecast_from: DateTime<Utc>,
+    pub forecast_for: NaiveDateTime, 
+    pub forecast_from: NaiveDateTime,
     pub cloud_cover_high: Option<i32>,
     pub cloud_cover_mid: Option<i32>,
     pub cloud_cover_low: Option<i32>,
@@ -81,6 +81,7 @@ pub struct Spot {
     pub name: String,
     pub country: String,
     pub models: Vec<IdModel>,
+    pub gmt_hour_offset: i32
 }
 
 fn deserialize_string_as_numeric<'de, T: std::str::FromStr, D: de::Deserializer<'de>>(
@@ -110,6 +111,8 @@ impl TryFrom<HashMap<String, Spot>> for Spot {
 }
 
 mod forecasts_arrays_format {
+    use crate::types::windguru::windguru_naivedatetime_format;
+
     use super::*;
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<Fcst>, D::Error>
@@ -121,8 +124,8 @@ mod forecasts_arrays_format {
 
         let num_data_points = data_map["GUST"].as_array().unwrap().len();
 
-        let forecast_from = parse_initstamp(&data_map["initstamp"]);
-        let update_from = windguru_datetime_format::deserialize(&data_map["update_last"])
+        let forecast_from = NaiveDateTime::from_timestamp_opt(data_map["initstamp"].as_i64().unwrap(), 0).unwrap();
+        let update_from = windguru_naivedatetime_format::deserialize(&data_map["update_last"])
             .map_err(serde::de::Error::custom)?;
 
         let mut data_vec = Vec::with_capacity(num_data_points);
@@ -195,7 +198,3 @@ mod windguru_hour_minutes_format {
     }
 }
 
-fn parse_initstamp(initstamp: &serde_json::Value) -> DateTime<Utc> {
-    let naive_datetime = NaiveDateTime::from_timestamp_opt(initstamp.as_i64().unwrap(), 0).unwrap();
-    DateTime::from_utc(naive_datetime, Utc)
-}
